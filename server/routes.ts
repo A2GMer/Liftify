@@ -6,7 +6,7 @@ import { insertWorkoutSchema, insertSetSchema } from "@shared/schema";
 import { z } from "zod";
 
 const createWorkoutWithSetsSchema = z.object({
-  workout: insertWorkoutSchema,
+  workout: insertWorkoutSchema.omit({ userId: true }),
   sets: z.array(insertSetSchema.omit({ workoutId: true })),
 });
 
