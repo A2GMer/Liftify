@@ -54,7 +54,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/workouts', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+
       const { workout: workoutData, sets: setsData } = createWorkoutWithSetsSchema.parse(req.body);
       
       // Create workout
