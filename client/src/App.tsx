@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import RecordWorkout from "@/pages/RecordWorkout";
@@ -12,6 +13,7 @@ import { useState } from "react";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { language, changeLanguage } = useLanguage();
   const [currentView, setCurrentView] = useState<'landing' | 'home' | 'record'>('landing');
 
   const handleGetStarted = () => {
@@ -32,17 +34,17 @@ function Router() {
 
   // Show landing page if not authenticated or loading
   if (isLoading || !isAuthenticated) {
-    return <Landing onGetStarted={handleGetStarted} />;
+    return <Landing onGetStarted={handleGetStarted} language={language} onLanguageChange={changeLanguage} />;
   }
 
   // Show authenticated views
   switch (currentView) {
     case 'record':
-      return <RecordWorkout onBack={handleBackToHome} />;
+      return <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} />;
     case 'home':
-      return <Home onNewWorkout={handleNewWorkout} />;
+      return <Home onNewWorkout={handleNewWorkout} language={language} onLanguageChange={changeLanguage} />;
     default:
-      return <Home onNewWorkout={handleNewWorkout} />;
+      return <Home onNewWorkout={handleNewWorkout} language={language} onLanguageChange={changeLanguage} />;
   }
 }
 

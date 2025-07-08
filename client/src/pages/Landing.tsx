@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -8,14 +7,15 @@ import { t, type Language } from "@/lib/i18n";
 
 interface LandingProps {
   onGetStarted: () => void;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
 }
 
-export default function Landing({ onGetStarted }: LandingProps) {
-  const [language, setLanguage] = useState<Language>('en');
+export default function Landing({ onGetStarted, language, onLanguageChange }: LandingProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} />
+      <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
       
       <HeroSection language={language} onGetStarted={onGetStarted} />
       

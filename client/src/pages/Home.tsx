@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -14,10 +14,11 @@ import type { WorkoutWithSets } from "@shared/schema";
 
 interface HomeProps {
   onNewWorkout: () => void;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
 }
 
-export default function Home({ onNewWorkout }: HomeProps) {
-  const [language, setLanguage] = useState<Language>('en');
+export default function Home({ onNewWorkout, language, onLanguageChange }: HomeProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -68,7 +69,7 @@ export default function Home({ onNewWorkout }: HomeProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} />
+      <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
       
       {/* Header */}
       <header className="bg-black text-white p-4 sticky top-0 z-40">

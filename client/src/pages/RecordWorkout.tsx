@@ -27,10 +27,11 @@ interface SetData {
 
 interface RecordWorkoutProps {
   onBack: () => void;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
 }
 
-export default function RecordWorkout({ onBack }: RecordWorkoutProps) {
-  const [language, setLanguage] = useState<Language>('en');
+export default function RecordWorkout({ onBack, language, onLanguageChange }: RecordWorkoutProps) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -207,7 +208,7 @@ export default function RecordWorkout({ onBack }: RecordWorkoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} />
+      <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
       
       {/* Header */}
       <header className="bg-black text-white p-4 sticky top-0 z-40">
