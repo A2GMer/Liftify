@@ -6,26 +6,19 @@ Liftify is a modern full-stack web application designed for tracking bench press
 
 ## System Architecture
 
-### Frontend Architecture
-- **Framework**: React with TypeScript
-- **Build Tool**: Vite for fast development and optimized builds
-- **UI Framework**: Tailwind CSS with shadcn/ui components
-- **State Management**: TanStack Query for server state management
-- **Routing**: Wouter for lightweight client-side routing
-- **Styling**: Tailwind CSS with custom design system and dark mode support
+### AWS Production Architecture
+- **Frontend**: AWS Amplify with React TypeScript
+- **Authentication**: AWS Cognito User Pool
+- **Backend**: AWS Lambda with Node.js TypeScript
+- **Database**: AWS RDS MySQL
+- **API Gateway**: AWS API Gateway REST API
+- **Build Tool**: Vite for development, AWS Amplify for production builds
 
-### Backend Architecture
+### Development Architecture (Legacy)
 - **Framework**: Express.js with TypeScript
-- **Runtime**: Node.js with ES modules
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Replit OpenID Connect integration
 - **Session Management**: Express sessions with PostgreSQL store
-
-### Database Design
-- **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Schema Location**: `shared/schema.ts` for type sharing between frontend and backend
-- **Migration Strategy**: Drizzle Kit for schema migrations
-- **Database Provider**: Neon Database (serverless PostgreSQL)
 
 ## Key Components
 
@@ -114,7 +107,10 @@ Liftify is a modern full-stack web application designed for tracking bench press
 
 ```
 Changelog:
-- July 08, 2025. Initial setup
+- July 08, 2025. Initial setup with Replit/PostgreSQL architecture
+- July 08, 2025. Added AWS deployment architecture (Amplify/Cognito/Lambda/RDS)
+- July 08, 2025. Fixed language persistence across page navigation
+- July 08, 2025. Created AWS Lambda deployment package
 ```
 
 ## User Preferences

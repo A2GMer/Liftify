@@ -1,0 +1,26 @@
+{
+  "name": "liftify-lambda",
+  "version": "1.0.0",
+  "description": "Liftify AWS Lambda backend",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "npm run build && zip -r liftify-lambda.zip dist/ node_modules/ package.json",
+    "deploy": "npm run package"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1470.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.450.0",
+    "@aws-sdk/client-rds-data": "^3.450.0",
+    "mysql2": "^3.6.3",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.22.4",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.124",
+    "@types/node": "^20.8.6",
+    "typescript": "^5.2.2"
+  }
+}
