@@ -149,6 +149,7 @@ Changelog:
 - July 09, 2025. Added testing tools for simulating subscription expiration without waiting 30 days
 - July 09, 2025. Removed testing tools after successful validation of automatic cancellation system
 - July 09, 2025. Cleaned up production environment by removing test credit card information from subscribe page
+- July 09, 2025. Updated subscription plan feature descriptions to match Landing page content across all languages
 ```
 
 ## User Preferences
