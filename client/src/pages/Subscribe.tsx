@@ -13,10 +13,8 @@ import { t } from "@/lib/i18n";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+import { getStripePublicKey, isStripeTestMode } from '@/lib/stripe-config';
+const stripePromise = loadStripe(getStripePublicKey());
 
 const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
   const stripe = useStripe();
@@ -363,6 +361,13 @@ export default function Subscribe() {
       <nav className="bg-white shadow-sm p-4">
         <TopNav currentLanguage={language} onLanguageChange={changeLanguage} />
       </nav>
+      
+      {/* Stripe Environment Warning */}
+      {isStripeTestMode() && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 text-center">
+          <strong>テスト環境:</strong> 本番環境での決済は行われません。テスト用カード情報のみ使用してください。
+        </div>
+      )}
       
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="text-center mb-8">

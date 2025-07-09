@@ -151,6 +151,7 @@ Changelog:
 - July 09, 2025. Cleaned up production environment by removing test credit card information from subscribe page
 - July 09, 2025. Updated subscription plan feature descriptions to match Landing page content across all languages
 - July 09, 2025. Implemented comprehensive Free plan data retention limits with automatic 30-day deletion system
+- July 09, 2025. Added Stripe environment separation system with test/production configuration switching
 ```
 
 ## User Preferences

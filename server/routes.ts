@@ -8,25 +8,22 @@ import { z } from "zod";
 import Stripe from "stripe";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { getStripeConfig, logStripeEnvironment } from "./stripe-config";
 
 const createWorkoutWithSetsSchema = z.object({
   workout: insertWorkoutSchema.omit({ userId: true }),
   sets: z.array(insertSetSchema.omit({ workoutId: true })),
 });
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-
-if (!process.env.STRIPE_PRO_PRODUCT_ID || !process.env.STRIPE_ULTIMATE_PRODUCT_ID) {
-  throw new Error('Missing required Stripe product IDs: STRIPE_PRO_PRODUCT_ID, STRIPE_ULTIMATE_PRODUCT_ID');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripeConfig = getStripeConfig();
+const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: "2024-12-18.acacia",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Log Stripe environment configuration
+  logStripeEnvironment();
+  
   // Auth middleware
   await setupAuth(app);
 
@@ -259,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Use environment variables for product IDs
-      const productId = plan === 'pro' ? process.env.STRIPE_PRO_PRODUCT_ID : process.env.STRIPE_ULTIMATE_PRODUCT_ID;
+      const productId = plan === 'pro' ? stripeConfig.proProductId : stripeConfig.ultimateProductId;
       
       if (!productId) {
         throw new Error(`Product ID not found for plan: ${plan}`);
@@ -440,7 +437,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe webhook endpoint for payment confirmations
   app.post('/api/stripe-webhook', async (req, res) => {
     const sig = req.headers['stripe-signature'];
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = stripeConfig.webhookSecret;
 
     console.log('Webhook received:', req.body?.type || 'unknown type');
 
@@ -488,8 +485,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               // Determine plan based on subscription
               const planMapping: { [key: string]: string } = {
-                [process.env.STRIPE_PRO_PRODUCT_ID || '']: 'pro',
-                [process.env.STRIPE_ULTIMATE_PRODUCT_ID || '']: 'ultimate',
+                [stripeConfig.proProductId]: 'pro',
+                [stripeConfig.ultimateProductId]: 'ultimate',
               };
               
               const subscriptionItem = subscription.items.data[0];
