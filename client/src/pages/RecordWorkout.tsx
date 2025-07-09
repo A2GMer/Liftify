@@ -570,29 +570,40 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     <Label className="text-sm text-gray-600 mb-2 block">
                       {t("record.sets.weight", language)} (kg)
                     </Label>
-                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3">
-                      <Button
-                        onClick={() => updateSetWeight(index, false)}
-                        size="sm"
-                        variant="outline"
-                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
-                      >
-                        <Minus className="w-5 h-5" />
-                      </Button>
-                      <div className="mx-4 min-w-[60px] text-center">
-                        <span className="text-2xl font-bold text-gray-900">
-                          {set.weight}
-                        </span>
-                        <div className="text-xs text-gray-500">-5kg / +5kg</div>
+                    <div className="relative bg-gray-50 rounded-lg overflow-hidden">
+                      {/* Background indicators */}
+                      <div className="absolute inset-0 flex">
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-6xl text-gray-200 font-light select-none">-</span>
+                        </div>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-6xl text-gray-200 font-light select-none">+</span>
+                        </div>
                       </div>
-                      <Button
-                        onClick={() => updateSetWeight(index, true)}
-                        size="sm"
-                        variant="outline"
-                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </Button>
+                      
+                      {/* Tap zones */}
+                      <div className="relative flex h-20">
+                        <button
+                          onClick={() => updateSetWeight(index, false)}
+                          className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
+                        >
+                        </button>
+                        <button
+                          onClick={() => updateSetWeight(index, true)}
+                          className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
+                        >
+                        </button>
+                      </div>
+                      
+                      {/* Value display */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="text-center">
+                          <span className="text-2xl font-bold text-gray-900">
+                            {set.weight}
+                          </span>
+                          <div className="text-xs text-gray-500">-5kg / +5kg</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -601,29 +612,40 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     <Label className="text-sm text-gray-600 mb-2 block">
                       {t("record.sets.reps", language)}
                     </Label>
-                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3">
-                      <Button
-                        onClick={() => updateSetReps(index, false)}
-                        size="sm"
-                        variant="outline"
-                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
-                      >
-                        <Minus className="w-5 h-5" />
-                      </Button>
-                      <div className="mx-4 min-w-[60px] text-center">
-                        <span className="text-2xl font-bold text-gray-900">
-                          {set.reps}
-                        </span>
-                        <div className="text-xs text-gray-500">-1 / +1</div>
+                    <div className="relative bg-gray-50 rounded-lg overflow-hidden">
+                      {/* Background indicators */}
+                      <div className="absolute inset-0 flex">
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-6xl text-gray-200 font-light select-none">-</span>
+                        </div>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-6xl text-gray-200 font-light select-none">+</span>
+                        </div>
                       </div>
-                      <Button
-                        onClick={() => updateSetReps(index, true)}
-                        size="sm"
-                        variant="outline"
-                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </Button>
+                      
+                      {/* Tap zones */}
+                      <div className="relative flex h-20">
+                        <button
+                          onClick={() => updateSetReps(index, false)}
+                          className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
+                        >
+                        </button>
+                        <button
+                          onClick={() => updateSetReps(index, true)}
+                          className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
+                        >
+                        </button>
+                      </div>
+                      
+                      {/* Value display */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="text-center">
+                          <span className="text-2xl font-bold text-gray-900">
+                            {set.reps}
+                          </span>
+                          <div className="text-xs text-gray-500">-1 / +1</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -707,28 +729,40 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                           <Label className="text-sm text-yellow-700 mb-2 block">
                             実際の重量 (kg)
                           </Label>
-                          <div className="flex items-center justify-center bg-white rounded-lg p-2">
-                            <Button
-                              onClick={() => updateCheatingWeight(index, false)}
-                              size="sm"
-                              variant="outline"
-                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                            <div className="mx-3 min-w-[50px] text-center">
-                              <span className="text-lg font-bold text-yellow-800">
-                                {set.cheatingWeight || 0}
-                              </span>
+                          <div className="relative bg-white rounded-lg overflow-hidden border border-yellow-200">
+                            {/* Background indicators */}
+                            <div className="absolute inset-0 flex">
+                              <div className="flex-1 flex items-center justify-center">
+                                <span className="text-4xl text-yellow-200 font-light select-none">-</span>
+                              </div>
+                              <div className="flex-1 flex items-center justify-center">
+                                <span className="text-4xl text-yellow-200 font-light select-none">+</span>
+                              </div>
                             </div>
-                            <Button
-                              onClick={() => updateCheatingWeight(index, true)}
-                              size="sm"
-                              variant="outline"
-                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            
+                            {/* Tap zones */}
+                            <div className="relative flex h-16">
+                              <button
+                                onClick={() => updateCheatingWeight(index, false)}
+                                className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
+                              >
+                              </button>
+                              <button
+                                onClick={() => updateCheatingWeight(index, true)}
+                                className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
+                              >
+                              </button>
+                            </div>
+                            
+                            {/* Value display */}
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-yellow-800">
+                                  {set.cheatingWeight || 0}
+                                </span>
+                                <div className="text-xs text-yellow-600">-5kg / +5kg</div>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -737,28 +771,40 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                           <Label className="text-sm text-yellow-700 mb-2 block">
                             実際の回数
                           </Label>
-                          <div className="flex items-center justify-center bg-white rounded-lg p-2">
-                            <Button
-                              onClick={() => updateCheatingReps(index, false)}
-                              size="sm"
-                              variant="outline"
-                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                            <div className="mx-3 min-w-[50px] text-center">
-                              <span className="text-lg font-bold text-yellow-800">
-                                {set.cheatingReps || 0}
-                              </span>
+                          <div className="relative bg-white rounded-lg overflow-hidden border border-yellow-200">
+                            {/* Background indicators */}
+                            <div className="absolute inset-0 flex">
+                              <div className="flex-1 flex items-center justify-center">
+                                <span className="text-4xl text-yellow-200 font-light select-none">-</span>
+                              </div>
+                              <div className="flex-1 flex items-center justify-center">
+                                <span className="text-4xl text-yellow-200 font-light select-none">+</span>
+                              </div>
                             </div>
-                            <Button
-                              onClick={() => updateCheatingReps(index, true)}
-                              size="sm"
-                              variant="outline"
-                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            
+                            {/* Tap zones */}
+                            <div className="relative flex h-16">
+                              <button
+                                onClick={() => updateCheatingReps(index, false)}
+                                className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
+                              >
+                              </button>
+                              <button
+                                onClick={() => updateCheatingReps(index, true)}
+                                className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
+                              >
+                              </button>
+                            </div>
+                            
+                            {/* Value display */}
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-yellow-800">
+                                  {set.cheatingReps || 0}
+                                </span>
+                                <div className="text-xs text-yellow-600">-1 / +1</div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -41,14 +41,14 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
 
     if (error) {
       toast({
-        title: language === 'ja' ? "決済失敗" : "Payment Failed",
+        title: t("subscribe.paymentFailed", language),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: language === 'ja' ? "決済成功" : "Payment Successful",
-        description: language === 'ja' ? "サブスクリプションに登録されました！" : "You are now subscribed!",
+        title: t("subscribe.paymentSuccess", language),
+        description: t("subscribe.subscribedSuccess", language),
       });
     }
     
@@ -64,8 +64,8 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
       >
         {isProcessing 
-          ? (language === 'ja' ? '処理中...' : 'Processing...')
-          : (language === 'ja' ? `${plan === 'pro' ? 'Pro' : 'Ultimate'}プランに登録` : `Subscribe to ${plan === 'pro' ? 'Pro' : 'Ultimate'}`)
+          ? t("subscribe.processing", language)
+          : `${t("subscribe.subscribeTo", language)} ${plan === 'pro' ? 'Pro' : 'Ultimate'}`
         }
       </Button>
     </form>
@@ -96,27 +96,27 @@ export default function Subscribe() {
   const getPlanInfo = () => {
     if (plan === 'pro') {
       return {
-        name: 'Pro',
+        name: t("pricing.pro", language),
         price: '¥500',
-        period: language === 'ja' ? '月額' : 'per month',
+        period: t("subscribe.perMonth", language),
         features: [
-          language === 'ja' ? '無制限データ保存' : 'Unlimited data storage',
-          language === 'ja' ? '高度な分析グラフ' : 'Advanced analytics charts',
-          language === 'ja' ? 'タグ付け機能' : 'Tagging features',
-          language === 'ja' ? 'ダークモード' : 'Dark mode',
+          t("subscribe.proFeature1", language),
+          t("subscribe.proFeature2", language),
+          t("subscribe.proFeature3", language),
+          t("subscribe.proFeature4", language),
         ]
       };
     }
     return {
-      name: 'Ultimate',
+      name: t("pricing.ultimate", language),
       price: '¥980',
-      period: language === 'ja' ? '月額' : 'per month',
+      period: t("subscribe.perMonth", language),
       features: [
-        language === 'ja' ? 'Proプランの全機能' : 'All Pro features',
-        language === 'ja' ? 'AIによる分析' : 'AI-powered analysis',
-        language === 'ja' ? 'メニュー提案' : 'Workout suggestions',
-        language === 'ja' ? '休憩時間提案' : 'Rest time suggestions',
-        language === 'ja' ? 'データエクスポート' : 'Data export',
+        t("subscribe.ultimateFeature1", language),
+        t("subscribe.ultimateFeature2", language),
+        t("subscribe.ultimateFeature3", language),
+        t("subscribe.ultimateFeature4", language),
+        t("subscribe.ultimateFeature5", language),
       ]
     };
   };
@@ -127,7 +127,7 @@ export default function Subscribe() {
         <div className="text-center">
           <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
           <p className="text-gray-600">
-            {language === 'ja' ? '読み込み中...' : 'Loading...'}
+            {t("loading", language)}
           </p>
         </div>
       </div>
@@ -145,10 +145,10 @@ export default function Subscribe() {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {language === 'ja' ? 'サブスクリプション登録' : 'Subscribe to Liftify'}
+            {t("subscribe.title", language)}
           </h1>
           <p className="text-gray-600">
-            {language === 'ja' ? 'プランを選択して決済を完了してください' : 'Complete your subscription to unlock premium features'}
+            {t("subscribe.subtitle", language)}
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export default function Subscribe() {
           <Card>
             <CardHeader>
               <CardTitle className="text-center">
-                {planInfo.name} {language === 'ja' ? 'プラン' : 'Plan'}
+                {planInfo.name} {t("subscribe.plan", language)}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -185,7 +185,7 @@ export default function Subscribe() {
           <Card>
             <CardHeader>
               <CardTitle>
-                {language === 'ja' ? '決済情報' : 'Payment Information'}
+                {t("subscribe.paymentInfo", language)}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -202,7 +202,7 @@ export default function Subscribe() {
             onClick={() => window.history.back()}
             className="mr-4"
           >
-            {language === 'ja' ? '戻る' : 'Back'}
+            {t("common.back", language)}
           </Button>
         </div>
       </div>
