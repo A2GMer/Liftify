@@ -134,6 +134,8 @@ Changelog:
 - July 09, 2025. Fixed Subscribe page infinite loading issue by optimizing plan checking logic
 - July 09, 2025. Added comprehensive downgrade functionality with Stripe subscription cancellation
 - July 09, 2025. Implemented payment validation to prevent subscription without payment info
+- July 09, 2025. Added plan selection button validation and payment form scroll functionality
+- July 09, 2025. Fixed Stripe payment redirect issue and URL parameter handling
 ```
 
 ## User Preferences

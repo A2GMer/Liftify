@@ -11,13 +11,25 @@ import RecordWorkout from "@/pages/RecordWorkout";
 import Subscribe from "@/pages/Subscribe";
 import MyPage from "@/pages/MyPage";
 import NotFound from "@/pages/not-found";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import React from "react";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const { language, changeLanguage } = useLanguage();
   const [currentView, setCurrentView] = useState<'landing' | 'home' | 'record' | 'mypage'>('landing');
   const [editingWorkoutId, setEditingWorkoutId] = useState<number | null>(null);
+
+  // Check for subscription success in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment_intent') && urlParams.get('redirect_status') === 'succeeded') {
+      // Payment was successful, show success message and clean URL
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      // Show success notification would go here if needed
+    }
+  }, []);
 
   const handleGetStarted = () => {
     window.location.href = "/api/login";
