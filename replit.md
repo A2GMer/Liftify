@@ -40,6 +40,7 @@ Liftify is a modern full-stack web application designed for tracking bench press
 - **Component Library**: Comprehensive UI components from shadcn/ui
 - **Analytics Dashboard**: Charts and statistics for workout progress
 - **Form Handling**: React Hook Form with Zod validation
+- **Endel-inspired Landing Page**: Modern design highlighting three key strengths and chest training evidence
 
 ### Backend API
 - **RESTful Design**: Standard REST endpoints for CRUD operations
@@ -111,6 +112,8 @@ Changelog:
 - July 08, 2025. Added AWS deployment architecture (Amplify/Cognito/Lambda/RDS)
 - July 08, 2025. Fixed language persistence across page navigation
 - July 08, 2025. Created AWS Lambda deployment package
+- July 09, 2025. Fixed edit mode API endpoint to properly load existing workout data
+- July 09, 2025. Redesigned landing page inspired by Endel's structure with three key strengths and chest training evidence
 ```
 
 ## User Preferences
