@@ -9,7 +9,7 @@ import { z } from "zod";
 import Stripe from "stripe";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { getStripeConfig, logStripeEnvironment } from "./stripe-config";
+import { getStripeConfig, logStripeEnvironment, getProductIdForLanguage, logLanguageSpecificStripeConfig } from "./stripe-config";
 
 // Validation middleware
 const validateRequest = (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -59,6 +59,7 @@ const stripe = new Stripe(stripeConfig.secretKey, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Log Stripe environment configuration
   logStripeEnvironment();
+  logLanguageSpecificStripeConfig();
   
   // Auth middleware
   await setupAuth(app);
@@ -264,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/create-subscription', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { plan } = req.body;
+      const { plan, language } = req.body;
       
       const user = await storage.getUser(userId);
       if (!user) {
@@ -315,12 +316,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerId = customer.id;
       }
 
-      // Use environment variables for product IDs
-      const productId = plan === 'pro' ? stripeConfig.proProductId : stripeConfig.ultimateProductId;
+      // Use language-specific product IDs
+      const validLanguages = ['en', 'ja', 'fr', 'de'];
+      const userLanguage = validLanguages.includes(language) ? language : 'en';
+      
+      let productId: string;
+      try {
+        productId = getProductIdForLanguage(plan, userLanguage);
+      } catch (error) {
+        console.error(`Failed to get product ID for ${plan} in ${userLanguage}, falling back to default`);
+        // Fallback to default configuration
+        productId = plan === 'pro' ? stripeConfig.proProductId : stripeConfig.ultimateProductId;
+      }
       
       if (!productId) {
-        throw new Error(`Product ID not found for plan: ${plan}`);
+        throw new Error(`Product ID not found for plan: ${plan} in language: ${userLanguage}`);
       }
+      
+      console.log(`Using product ID ${productId} for plan ${plan} in language ${userLanguage}`);
       
       // Get the default price for the product
       const prices = await stripe.prices.list({

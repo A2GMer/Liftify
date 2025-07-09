@@ -196,7 +196,7 @@ export default function Subscribe() {
     
     // Only create subscription for pro plan (ultimate is disabled)
     if (planParam === 'pro' && (user.subscriptionPlan !== 'pro' || user.subscriptionStatus !== 'active')) {
-      apiRequest("POST", "/api/create-subscription", { plan: planParam })
+      apiRequest("POST", "/api/create-subscription", { plan: planParam, language: language })
         .then((res) => res.json())
         .then((data) => {
           console.log('Subscription created:', data);
