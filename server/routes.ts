@@ -14,6 +14,10 @@ const createWorkoutWithSetsSchema = z.object({
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
+
+if (!process.env.STRIPE_PRO_PRODUCT_ID || !process.env.STRIPE_ULTIMATE_PRODUCT_ID) {
+  throw new Error('Missing required Stripe product IDs: STRIPE_PRO_PRODUCT_ID, STRIPE_ULTIMATE_PRODUCT_ID');
+}
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-12-18.acacia",
 });
@@ -228,8 +232,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerId = customer.id;
       }
 
-      // Use existing product IDs for the plans
-      const productId = plan === 'pro' ? 'prod_SeC3r09HiUPQRm' : 'prod_SeC5sRCzptC9dB';
+      // Use environment variables for product IDs
+      const productId = plan === 'pro' ? process.env.STRIPE_PRO_PRODUCT_ID : process.env.STRIPE_ULTIMATE_PRODUCT_ID;
+      
+      if (!productId) {
+        throw new Error(`Product ID not found for plan: ${plan}`);
+      }
       
       // Get the default price for the product
       const prices = await stripe.prices.list({
