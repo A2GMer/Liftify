@@ -61,6 +61,8 @@ export const sets = pgTable("sets", {
   assistance: boolean("assistance").default(false),
   failed: boolean("failed").default(false),
   isCheatingSet: boolean("is_cheating_set").default(false),
+  formFocused: boolean("form_focused").default(false),
+  repFocused: boolean("rep_focused").default(false),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });

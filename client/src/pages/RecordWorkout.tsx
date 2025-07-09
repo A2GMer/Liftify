@@ -27,6 +27,8 @@ interface SetData {
   cheating: boolean;
   cheatingWeight?: number;
   cheatingReps?: number;
+  formFocused: boolean;
+  repFocused: boolean;
   notes: string;
   showNotes: boolean;
 }
@@ -63,6 +65,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
       assistance: false,
       failed: false,
       cheating: false,
+      formFocused: false,
+      repFocused: false,
       notes: '',
       showNotes: false,
     },
@@ -75,6 +79,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
       assistance: false,
       failed: false,
       cheating: false,
+      formFocused: false,
+      repFocused: false,
       notes: '',
       showNotes: false,
     },
@@ -132,6 +138,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
           assistance: Boolean(set.assistance),
           failed: Boolean(set.failed),
           cheating: false,
+          formFocused: Boolean(set.formFocused),
+          repFocused: Boolean(set.repFocused),
           notes: set.notes || '',
           showNotes: false,
         }));
@@ -158,6 +166,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
           assistance: Boolean(set.assistance),
           failed: false, // Reset failed status for new workout
           cheating: false,
+          formFocused: Boolean(set.formFocused),
+          repFocused: Boolean(set.repFocused),
           notes: '', // Reset notes for new workout
           showNotes: false,
         }));
@@ -174,6 +184,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
             assistance: false,
             failed: false,
             cheating: false,
+            formFocused: false,
+            repFocused: false,
             notes: '',
             showNotes: false,
           },
@@ -186,6 +198,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
             assistance: false,
             failed: false,
             cheating: false,
+            formFocused: false,
+            repFocused: false,
             notes: '',
             showNotes: false,
           },
@@ -368,6 +382,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
         buttUp: set.buttUp,
         assistance: set.assistance,
         failed: set.failed,
+        formFocused: set.formFocused,
+        repFocused: set.repFocused,
         notes: set.notes,
         isCheatingSet: false,
       });
@@ -382,6 +398,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
           buttUp: set.buttUp,
           assistance: set.assistance,
           failed: false, // cheating sets are not failed
+          formFocused: set.formFocused,
+          repFocused: set.repFocused,
           notes: `チーティング: ${set.notes}`,
           isCheatingSet: true,
         });
@@ -402,15 +420,18 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
   };
 
   const addSet = () => {
+    const lastSet = sets.length > 0 ? sets[sets.length - 1] : null;
     const newSet: SetData = {
       setNumber: sets.length + 1,
-      weight: sets.length > 0 ? sets[sets.length - 1].weight : 65,
-      reps: sets.length > 0 ? sets[sets.length - 1].reps : 5,
-      powerBelt: false,
-      buttUp: false,
-      assistance: false,
+      weight: lastSet ? lastSet.weight : 65,
+      reps: lastSet ? lastSet.reps : 5,
+      powerBelt: lastSet ? lastSet.powerBelt : false,
+      buttUp: lastSet ? lastSet.buttUp : false,
+      assistance: lastSet ? lastSet.assistance : false,
       failed: false,
       cheating: false,
+      formFocused: lastSet ? lastSet.formFocused : false,
+      repFocused: lastSet ? lastSet.repFocused : false,
       notes: '',
       showNotes: false,
     };
@@ -643,6 +664,24 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-600 hover:text-white border-red-300'}`}
                   >
                     つぶれた
+                  </Button>
+                  
+                  <Button
+                    onClick={() => toggleSetOption(index, 'formFocused')}
+                    variant={set.formFocused ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-600 hover:text-white border-blue-300'}`}
+                  >
+                    効き重視
+                  </Button>
+                  
+                  <Button
+                    onClick={() => toggleSetOption(index, 'repFocused')}
+                    variant={set.repFocused ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-600 hover:text-white border-green-300'}`}
+                  >
+                    回数重視
                   </Button>
                   
                   <Button

@@ -120,6 +120,8 @@ Changelog:
 - July 09, 2025. Implemented automatic language detection from browser settings and timezone
 - July 09, 2025. Added auto-population feature for new workouts using most recent workout data
 - July 09, 2025. Implemented comprehensive UI minimization with logo size standardization
+- July 09, 2025. Fixed 1RM calculation discrepancy by standardizing both home stats and chart to use same conversion table
+- July 09, 2025. Added "効き重視" (form-focused) and "回数重視" (rep-focused) set options with option persistence
 ```
 
 ## User Preferences
