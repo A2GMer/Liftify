@@ -27,12 +27,23 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
-
+    
     if (!stripe || !elements) {
-      setIsProcessing(false);
       return;
     }
+
+    // Validate payment element is complete
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      toast({
+        title: t("subscribe.paymentInfoRequired", language),
+        description: t("subscribe.paymentInfoRequiredDesc", language),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
 
     const { error } = await stripe.confirmPayment({
       elements,
