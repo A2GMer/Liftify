@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Save, Plus, Trash2, Minus, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
@@ -33,9 +34,10 @@ interface RecordWorkoutProps {
   onBack: () => void;
   language: Language;
   onLanguageChange: (language: Language) => void;
+  editingWorkoutId?: number | null;
 }
 
-export default function RecordWorkout({ onBack, language, onLanguageChange }: RecordWorkoutProps) {
+export default function RecordWorkout({ onBack, language, onLanguageChange, editingWorkoutId }: RecordWorkoutProps) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -43,6 +45,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
   const [workoutDate, setWorkoutDate] = useState('');
   const [workoutTime, setWorkoutTime] = useState('');
   const [workoutNotes, setWorkoutNotes] = useState('');
+  const [overallRating, setOverallRating] = useState([5]);
+  const [allOutFeeling, setAllOutFeeling] = useState([5]);
   const [sets, setSets] = useState<SetData[]>([
     {
       setNumber: 1,
@@ -280,6 +284,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
         date: workoutDate,
         time: workoutTime,
         notes: workoutNotes,
+        overallRating: overallRating[0],
+        allOutFeeling: allOutFeeling[0],
       },
       sets: allSets,
     };
@@ -652,21 +658,61 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
         </div>
       </section>
 
-      {/* Workout Notes */}
+      {/* Workout Evaluation */}
       <section className="p-4">
         <Card>
-          <CardContent className="p-4">
-            <Label htmlFor="workoutNotes">
-              {t("record.workoutNotes", language)}
-            </Label>
-            <Textarea
-              id="workoutNotes"
-              rows={3}
-              value={workoutNotes}
-              onChange={(e) => setWorkoutNotes(e.target.value)}
-              placeholder="Overall thoughts about today's workout..."
-              className="focus:ring-coral focus:border-coral"
-            />
+          <CardContent className="p-4 space-y-6">
+            <div>
+              <Label htmlFor="workoutNotes">
+                {t("record.workoutNotes", language)}
+              </Label>
+              <Textarea
+                id="workoutNotes"
+                rows={3}
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                placeholder="Overall thoughts about today's workout..."
+                className="focus:ring-coral focus:border-coral"
+              />
+            </div>
+            
+            {/* Overall Rating Slider */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                総合評価 ({overallRating[0]}/10)
+              </Label>
+              <Slider
+                value={overallRating}
+                onValueChange={setOverallRating}
+                max={10}
+                min={1}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>悪い</span>
+                <span>良い</span>
+              </div>
+            </div>
+
+            {/* All Out Feeling Slider */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                オールアウト感覚 ({allOutFeeling[0]}/10)
+              </Label>
+              <Slider
+                value={allOutFeeling}
+                onValueChange={setAllOutFeeling}
+                max={10}
+                min={1}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>余裕</span>
+                <span>限界</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>

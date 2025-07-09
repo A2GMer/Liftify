@@ -14,11 +14,12 @@ import type { WorkoutWithSets } from "@shared/schema";
 
 interface HomeProps {
   onNewWorkout: () => void;
+  onEditWorkout: (workoutId: number) => void;
   language: Language;
   onLanguageChange: (language: Language) => void;
 }
 
-export default function Home({ onNewWorkout, language, onLanguageChange }: HomeProps) {
+export default function Home({ onNewWorkout, onEditWorkout, language, onLanguageChange }: HomeProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -203,8 +204,8 @@ export default function Home({ onNewWorkout, language, onLanguageChange }: HomeP
                 workout.sets.reduce((sum, set) => sum + set.reps, 0) / totalSets : 0;
 
               return (
-                <Card key={workout.id}>
-                  <CardContent className="p-4">
+                <Card key={workout.id} className="cursor-pointer hover:bg-gray-50 transition-colors">
+                  <CardContent className="p-4" onClick={() => onEditWorkout(workout.id)}>
                     <div className="flex justify-between items-center">
                       <div>
                         <div className="font-semibold text-gray-900">

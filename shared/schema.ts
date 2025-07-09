@@ -43,6 +43,8 @@ export const workouts = pgTable("workouts", {
   date: date("date").notNull(),
   time: text("time").notNull(),
   notes: text("notes"),
+  overallRating: integer("overall_rating").default(5), // 1-10 scale
+  allOutFeeling: integer("all_out_feeling").default(5), // 1-10 scale
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -15,16 +15,24 @@ function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const { language, changeLanguage } = useLanguage();
   const [currentView, setCurrentView] = useState<'landing' | 'home' | 'record'>('landing');
+  const [editingWorkoutId, setEditingWorkoutId] = useState<number | null>(null);
 
   const handleGetStarted = () => {
     window.location.href = "/api/login";
   };
 
   const handleNewWorkout = () => {
+    setEditingWorkoutId(null);
+    setCurrentView('record');
+  };
+
+  const handleEditWorkout = (workoutId: number) => {
+    setEditingWorkoutId(workoutId);
     setCurrentView('record');
   };
 
   const handleBackToHome = () => {
+    setEditingWorkoutId(null);
     setCurrentView('home');
   };
 
@@ -40,11 +48,11 @@ function Router() {
   // Show authenticated views
   switch (currentView) {
     case 'record':
-      return <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} />;
+      return <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} editingWorkoutId={editingWorkoutId} />;
     case 'home':
-      return <Home onNewWorkout={handleNewWorkout} language={language} onLanguageChange={changeLanguage} />;
+      return <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />;
     default:
-      return <Home onNewWorkout={handleNewWorkout} language={language} onLanguageChange={changeLanguage} />;
+      return <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />;
   }
 }
 
