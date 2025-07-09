@@ -48,7 +48,7 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: window.location.origin,
+        return_url: `${window.location.origin}/?payment_success=true`,
       },
     });
 
@@ -60,11 +60,11 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
       });
       setIsProcessing(false);
     } else {
+      // Payment succeeded, redirect will happen automatically
       toast({
         title: t("subscribe.paymentSuccess", language),
         description: t("subscribe.subscribedSuccess", language),
       });
-      // Don't set processing to false here as we're redirecting
     }
   };
 

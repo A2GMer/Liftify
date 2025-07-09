@@ -26,6 +26,10 @@ function Router() {
       // Payment was successful, clean URL and redirect to home
       window.history.replaceState({}, '', window.location.origin);
       setCurrentView('home');
+    } else if (urlParams.get('payment_success') === 'true') {
+      // Alternative success detection
+      window.history.replaceState({}, '', window.location.origin);
+      setCurrentView('home');
     }
   }, []);
 

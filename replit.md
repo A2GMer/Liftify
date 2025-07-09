@@ -136,6 +136,10 @@ Changelog:
 - July 09, 2025. Implemented payment validation to prevent subscription without payment info
 - July 09, 2025. Added plan selection button validation and payment form scroll functionality
 - July 09, 2025. Fixed Stripe payment redirect issue and URL parameter handling
+- July 09, 2025. Fixed iframe navigation error by replacing window.location.href with window.location.assign
+- July 09, 2025. Implemented Stripe webhook system to update user plans only after confirmed payment
+- July 09, 2025. Enhanced subscription cancellation to require successful Stripe API response
+- July 09, 2025. Removed onPlanChange prop chain and made plan change buttons navigate directly to subscribe page
 ```
 
 ## User Preferences

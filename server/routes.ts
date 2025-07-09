@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import express from "express";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertWorkoutSchema, insertSetSchema } from "@shared/schema";
@@ -270,8 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expand: ['latest_invoice.payment_intent'],
       });
 
-      // Update user with Stripe info
-      await storage.updateUserStripeInfo(userId, customerId, subscription.id, plan);
+      // Update user with Stripe info but keep plan as free until payment is confirmed
+      await storage.updateUserStripeInfo(userId, customerId, subscription.id, 'free');
 
       const invoice = subscription.latest_invoice as Stripe.Invoice;
       const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
@@ -299,14 +300,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Cancel Stripe subscription if it exists
       if (user.stripeSubscriptionId) {
         try {
-          await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+          const canceledSubscription = await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+          console.log("Stripe subscription canceled:", canceledSubscription.id);
         } catch (stripeError) {
           console.error("Error canceling Stripe subscription:", stripeError);
-          // Continue with local cancellation even if Stripe fails
+          return res.status(500).json({ message: "Failed to cancel subscription with Stripe" });
         }
       }
 
-      // Update user to free plan
+      // Update user to free plan only after successful Stripe cancellation
       const updatedUser = await storage.cancelUserSubscription(userId);
       
       res.json({
@@ -317,6 +319,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error canceling subscription:", error);
       res.status(500).json({ message: "Failed to cancel subscription: " + error.message });
     }
+  });
+
+  // Stripe webhook endpoint for payment confirmations
+  app.post('/api/stripe-webhook', async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+      console.error('Stripe webhook secret not configured');
+      return res.status(500).send('Webhook secret not configured');
+    }
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig as string, webhookSecret);
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        console.log('Payment succeeded:', paymentIntent.id);
+        
+        // Find the subscription associated with this payment
+        const subscriptions = await stripe.subscriptions.list({
+          limit: 100,
+        });
+        
+        const subscription = subscriptions.data.find(sub => {
+          const invoice = sub.latest_invoice as Stripe.Invoice;
+          return invoice.payment_intent === paymentIntent.id;
+        });
+
+        if (subscription) {
+          // Find user by customer ID
+          const customerId = subscription.customer as string;
+          const user = await storage.getUserByStripeCustomerId(customerId);
+          
+          if (user) {
+            // Determine plan based on subscription
+            const planMapping: { [key: string]: string } = {
+              [process.env.STRIPE_PRO_PRODUCT_ID || '']: 'pro',
+              [process.env.STRIPE_ULTIMATE_PRODUCT_ID || '']: 'ultimate',
+            };
+            
+            const subscriptionItem = subscription.items.data[0];
+            const price = await stripe.prices.retrieve(subscriptionItem.price.id);
+            const plan = planMapping[price.product as string] || 'free';
+            
+            // Update user plan only after successful payment
+            await storage.updateUserStripeInfo(user.id, customerId, subscription.id, plan);
+            console.log(`User ${user.id} upgraded to ${plan} plan`);
+          }
+        }
+        break;
+      
+      case 'customer.subscription.deleted':
+        const deletedSubscription = event.data.object;
+        console.log('Subscription canceled:', deletedSubscription.id);
+        
+        // Find user by customer ID and downgrade to free
+        const canceledCustomerId = deletedSubscription.customer as string;
+        const canceledUser = await storage.getUserByStripeCustomerId(canceledCustomerId);
+        
+        if (canceledUser) {
+          await storage.cancelUserSubscription(canceledUser.id);
+          console.log(`User ${canceledUser.id} downgraded to free plan`);
+        }
+        break;
+
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.json({ received: true });
   });
 
   const httpServer = createServer(app);
