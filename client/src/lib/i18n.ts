@@ -98,6 +98,10 @@ export const translations = {
     "subscribe.ultimateFeature4": "Personal coaching",
     "subscribe.downgradeSuccess": "Downgrade Successful",
     "subscribe.downgradeSuccessDesc": "You have been downgraded to the Free plan",
+    
+    // Free Plan Restrictions
+    "freeplan.dataRetentionNotice": "Free plan users can only view the last 30 days of data",
+    "freeplan.upgradeToSeeMore": "Upgrade to Pro to see unlimited data",
     "subscribe.downgradeError": "Downgrade Failed",
     "subscribe.downgradeErrorDesc": "Failed to downgrade subscription. Please try again.",
     "subscribe.paymentInfoRequired": "Payment Information Required",
@@ -220,6 +224,10 @@ export const translations = {
     "subscribe.ultimateFeature5": "ダークモード",
     "subscribe.downgradeSuccess": "ダウングレード成功",
     "subscribe.downgradeSuccessDesc": "Freeプランにダウングレードしました",
+    
+    // Free Plan Restrictions
+    "freeplan.dataRetentionNotice": "無料プランでは過去30日間のデータのみ表示されます",
+    "freeplan.upgradeToSeeMore": "Proプランにアップグレードで無制限データを表示",
     "subscribe.downgradeError": "ダウングレード失敗",
     "subscribe.downgradeErrorDesc": "サブスクリプションのダウングレードに失敗しました。再度お試しください。",
     "subscribe.paymentInfoRequired": "決済情報の入力が必要です",
@@ -346,6 +354,10 @@ export const translations = {
     "subscribe.proFeature4": "Fonctions de marquage",
     "subscribe.downgradeSuccess": "Rétrogradation Réussie",
     "subscribe.downgradeSuccessDesc": "Vous avez été rétrogradé vers le plan Gratuit",
+    
+    // Free Plan Restrictions
+    "freeplan.dataRetentionNotice": "Les utilisateurs du plan gratuit ne peuvent voir que les 30 derniers jours",
+    "freeplan.upgradeToSeeMore": "Passez au plan Pro pour voir des données illimitées",
     "subscribe.downgradeError": "Échec de la Rétrogradation",
     "subscribe.downgradeErrorDesc": "Échec de la rétrogradation de l'abonnement. Veuillez réessayer.",
     "subscribe.paymentInfoRequired": "Informations de Paiement Requises",
@@ -472,6 +484,10 @@ export const translations = {
     "subscribe.proFeature4": "Tagging-Funktionen",
     "subscribe.downgradeSuccess": "Downgrade Erfolgreich",
     "subscribe.downgradeSuccessDesc": "Sie wurden zum kostenlosen Plan herabgestuft",
+    
+    // Free Plan Restrictions
+    "freeplan.dataRetentionNotice": "Kostenlose Nutzer können nur die letzten 30 Tage sehen",
+    "freeplan.upgradeToSeeMore": "Upgrade zu Pro für unbegrenzte Daten",
     "subscribe.downgradeError": "Downgrade Fehlgeschlagen",
     "subscribe.downgradeErrorDesc": "Downgrade des Abonnements fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "subscribe.paymentInfoRequired": "Zahlungsinformationen Erforderlich",

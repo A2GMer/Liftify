@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, User, CreditCard, Calendar, Trophy } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowLeft, User, CreditCard, Calendar, Trophy, Info } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -239,6 +240,22 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
           </CardContent>
         </Card>
       </section>
+
+      {/* Free Plan Data Retention Notice */}
+      {user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan) && (
+        <section className="p-4 pb-0">
+          <Alert className="border-yellow-200 bg-yellow-50">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-sm text-yellow-800">
+              {t("freeplan.dataRetentionNotice", language)}
+              <br />
+              <span className="text-yellow-600">
+                {t("freeplan.upgradeToSeeMore", language)}
+              </span>
+            </AlertDescription>
+          </Alert>
+        </section>
+      )}
 
       {/* Account Info */}
       <section className="p-4">

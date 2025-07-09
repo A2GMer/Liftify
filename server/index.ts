@@ -73,6 +73,15 @@ app.use((req, res, next) => {
       console.error("Error processing expired subscriptions:", error);
     }
   }, 5 * 60 * 1000); // 5 minutes
+
+  // Set up periodic cleanup for free user data (every 24 hours)
+  setInterval(async () => {
+    try {
+      await storage.cleanupFreeUserData();
+    } catch (error) {
+      console.error("Error cleaning up free user data:", error);
+    }
+  }, 24 * 60 * 60 * 1000); // 24 hours
   server.listen({
     port,
     host: "0.0.0.0",

@@ -7,7 +7,8 @@ import { WorkoutChart } from "@/components/WorkoutChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, Info } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -89,6 +90,22 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
           </div>
         </div>
       </header>
+
+      {/* Free Plan Data Retention Notice */}
+      {user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan) && (
+        <div className="p-4 pb-0">
+          <Alert className="border-yellow-200 bg-yellow-50">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-sm text-yellow-800">
+              {t("freeplan.dataRetentionNotice", language)}
+              <br />
+              <span className="text-yellow-600">
+                {t("freeplan.upgradeToSeeMore", language)}
+              </span>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* Stats Overview */}
       <section className="p-4">
