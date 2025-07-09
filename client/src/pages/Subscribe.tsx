@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TopNav } from "@/components/TopNav";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAuth } from "@/hooks/useAuth";
+import { isUnauthorizedError } from "@/lib/authUtils";
 import { t } from "@/lib/i18n";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
@@ -76,8 +78,27 @@ export default function Subscribe() {
   const [clientSecret, setClientSecret] = useState("");
   const [plan, setPlan] = useState<string>("");
   const { language, changeLanguage } = useLanguage();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { toast } = useToast();
+  
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast({
+        title: "Unauthorized",
+        description: "You are logged out. Logging in again...",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+      return;
+    }
+  }, [isAuthenticated, authLoading, toast]);
   
   useEffect(() => {
+    if (!isAuthenticated || authLoading) return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const planParam = urlParams.get('plan') || 'pro';
     setPlan(planParam);
@@ -89,9 +110,20 @@ export default function Subscribe() {
         setClientSecret(data.clientSecret);
       })
       .catch((error) => {
+        if (isUnauthorizedError(error)) {
+          toast({
+            title: "Unauthorized",
+            description: "You are logged out. Logging in again...",
+            variant: "destructive",
+          });
+          setTimeout(() => {
+            window.location.href = "/api/login";
+          }, 500);
+          return;
+        }
         console.error('Error creating subscription:', error);
       });
-  }, []);
+  }, [isAuthenticated, authLoading, toast]);
 
   const getPlanInfo = () => {
     if (plan === 'pro') {
@@ -120,6 +152,23 @@ export default function Subscribe() {
       ]
     };
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-600">
+            {t("loading", language)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect
+  }
 
   if (!clientSecret) {
     return (
