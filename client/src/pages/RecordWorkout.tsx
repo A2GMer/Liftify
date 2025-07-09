@@ -48,13 +48,22 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
 
   const [workoutDate, setWorkoutDate] = useState(() => {
     const now = new Date();
-    const todayDate = now.toISOString().split('T')[0];
-    console.log('Initial workoutDate set to:', todayDate);
+    // Use local timezone instead of UTC to get correct local date
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayDate = `${year}-${month}-${day}`;
+    console.log('Initial workoutDate set to:', todayDate, 'from local time:', now.toString());
     return todayDate;
   });
   const [workoutTime, setWorkoutTime] = useState(() => {
     const now = new Date();
-    return now.toTimeString().slice(0, 5);
+    // Use local timezone to get correct local time
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const currentTime = `${hours}:${minutes}`;
+    console.log('Initial workoutTime set to:', currentTime, 'from local time:', now.toString());
+    return currentTime;
   });
   const [workoutNotes, setWorkoutNotes] = useState('');
   const [allOutFeeling, setAllOutFeeling] = useState([5]);
@@ -488,9 +497,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                   }}
                   className="focus:ring-coral focus:border-coral"
                 />
-                <div className="text-xs text-gray-500 mt-1">
-                  Current value: {workoutDate}
-                </div>
+
               </div>
               <div>
                 <Label htmlFor="time">{t("record.time", language)}</Label>
