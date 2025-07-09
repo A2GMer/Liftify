@@ -334,11 +334,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify this payment intent belongs to the authenticated user
       const user = await storage.getUser(userId);
       if (!user || !user.stripeCustomerId) {
+        console.error('User not found or no Stripe customer:', { userId, user: user ? 'exists' : 'null' });
         return res.status(400).json({ message: "User not found or no Stripe customer" });
       }
       
       // Check if payment intent belongs to this user's customer
       if (paymentIntent.customer !== user.stripeCustomerId) {
+        console.error('Payment intent customer mismatch:', { 
+          paymentIntentCustomer: paymentIntent.customer, 
+          userCustomer: user.stripeCustomerId 
+        });
         return res.status(403).json({ message: "Payment intent does not belong to this user" });
       }
       
@@ -413,6 +418,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const sig = req.headers['stripe-signature'];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+    console.log('Webhook received:', req.body?.type || 'unknown type');
+
     if (!webhookSecret) {
       console.error('Stripe webhook secret not configured');
       return res.status(500).send('Webhook secret not configured');
@@ -422,6 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       event = stripe.webhooks.constructEvent(req.body, sig as string, webhookSecret);
+      console.log('Webhook signature verified successfully');
     } catch (err: any) {
       console.error('Webhook signature verification failed:', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -431,46 +439,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-        console.log('Payment succeeded:', paymentIntent.id);
+        console.log('Webhook - Payment succeeded:', paymentIntent.id);
         
-        // Find the subscription associated with this payment
-        const subscriptions = await stripe.subscriptions.list({
-          limit: 100,
-        });
-        
-        const subscription = subscriptions.data.find(sub => {
-          const invoice = sub.latest_invoice as Stripe.Invoice;
-          return invoice.payment_intent === paymentIntent.id;
-        });
-
-        if (subscription) {
-          // Find user by customer ID
-          const customerId = subscription.customer as string;
-          const user = await storage.getUserByStripeCustomerId(customerId);
+        try {
+          // Find the subscription associated with this payment
+          const subscriptions = await stripe.subscriptions.list({
+            limit: 100,
+          });
           
-          if (user) {
-            // Determine plan based on subscription
-            const planMapping: { [key: string]: string } = {
-              [process.env.STRIPE_PRO_PRODUCT_ID || '']: 'pro',
-              [process.env.STRIPE_ULTIMATE_PRODUCT_ID || '']: 'ultimate',
-            };
+          const subscription = subscriptions.data.find(sub => {
+            const invoice = sub.latest_invoice as Stripe.Invoice;
+            return invoice.payment_intent === paymentIntent.id;
+          });
+
+          if (subscription) {
+            console.log('Webhook - Found subscription:', subscription.id);
             
-            const subscriptionItem = subscription.items.data[0];
-            const price = await stripe.prices.retrieve(subscriptionItem.price.id);
-            const plan = planMapping[price.product as string] || 'free';
+            // Find user by customer ID
+            const customerId = subscription.customer as string;
+            const user = await storage.getUserByStripeCustomerId(customerId);
             
-            // Update user plan only after successful payment
-            const [updatedUser] = await db
-              .update(users)
-              .set({
-                subscriptionPlan: plan,
-                subscriptionStatus: 'active',
-                updatedAt: new Date(),
-              })
-              .where(eq(users.id, user.id))
-              .returning();
-            console.log(`User ${user.id} upgraded to ${plan} plan via webhook`);
+            if (user) {
+              console.log('Webhook - Found user:', user.id);
+              
+              // Determine plan based on subscription
+              const planMapping: { [key: string]: string } = {
+                [process.env.STRIPE_PRO_PRODUCT_ID || '']: 'pro',
+                [process.env.STRIPE_ULTIMATE_PRODUCT_ID || '']: 'ultimate',
+              };
+              
+              const subscriptionItem = subscription.items.data[0];
+              const price = await stripe.prices.retrieve(subscriptionItem.price.id);
+              const plan = planMapping[price.product as string] || 'free';
+              
+              console.log('Webhook - Determined plan:', plan, 'for product:', price.product);
+              
+              // Update user plan only after successful payment
+              const [updatedUser] = await db
+                .update(users)
+                .set({
+                  subscriptionPlan: plan,
+                  subscriptionStatus: 'active',
+                  updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id))
+                .returning();
+              console.log(`Webhook - User ${user.id} upgraded to ${plan} plan successfully`);
+            } else {
+              console.error('Webhook - User not found for customer:', customerId);
+            }
+          } else {
+            console.error('Webhook - Subscription not found for payment intent:', paymentIntent.id);
           }
+        } catch (error) {
+          console.error('Webhook - Error processing payment_intent.succeeded:', error);
         }
         break;
       
