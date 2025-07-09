@@ -29,12 +29,14 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
     e.preventDefault();
     
     if (!stripe || !elements) {
+      console.error('Stripe not loaded');
       return;
     }
 
     // Validate payment element is complete
     const { error: submitError } = await elements.submit();
     if (submitError) {
+      console.error('Payment validation error:', submitError);
       toast({
         title: t("subscribe.paymentInfoRequired", language),
         description: t("subscribe.paymentInfoRequiredDesc", language),
@@ -45,26 +47,50 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
 
     setIsProcessing(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/?payment_success=true`,
-      },
-    });
+    try {
+      console.log('Attempting to confirm payment...');
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/?payment_success=true`,
+        },
+        redirect: 'if_required'
+      });
 
-    if (error) {
+      console.log('Payment confirmation result:', { error, paymentIntent });
+
+      if (error) {
+        console.error('Payment confirmation error:', error);
+        toast({
+          title: t("subscribe.paymentFailed", language),
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded
+        console.log('Payment succeeded:', paymentIntent.id);
+        toast({
+          title: t("subscribe.paymentSuccess", language),
+          description: t("subscribe.subscribedSuccess", language),
+        });
+        
+        // Redirect to home page
+        setTimeout(() => {
+          window.location.assign('/?payment_success=true');
+        }, 2000);
+      } else {
+        console.log('Payment requires additional action or is processing');
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      console.error('Unexpected error during payment:', err);
       toast({
         title: t("subscribe.paymentFailed", language),
-        description: error.message,
+        description: 'An unexpected error occurred',
         variant: "destructive",
       });
       setIsProcessing(false);
-    } else {
-      // Payment succeeded, redirect will happen automatically
-      toast({
-        title: t("subscribe.paymentSuccess", language),
-        description: t("subscribe.subscribedSuccess", language),
-      });
     }
   };
 
@@ -437,9 +463,22 @@ export default function Subscribe() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm plan={plan} />
-              </Elements>
+              <div className="space-y-4">
+                {/* Test card info */}
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2">テスト用カード情報</h4>
+                  <div className="text-sm text-blue-700 space-y-1">
+                    <div>カード番号: 4242 4242 4242 4242</div>
+                    <div>有効期限: 12/34</div>
+                    <div>CVC: 123</div>
+                    <div>郵便番号: 12345</div>
+                  </div>
+                </div>
+                
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <CheckoutForm plan={plan} />
+                </Elements>
+              </div>
             </CardContent>
           </Card>
         )}

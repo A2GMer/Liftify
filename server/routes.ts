@@ -271,6 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expand: ['latest_invoice.payment_intent'],
       });
 
+      console.log('Created subscription:', subscription.id);
+
       // Update user with Stripe info but keep plan as free until payment is confirmed
       await storage.updateUserStripeInfo(userId, customerId, subscription.id, 'free');
 
