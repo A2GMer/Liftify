@@ -71,13 +71,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan: string = 'pro'): Promise<User> {
+    const status = plan === 'free' ? 'incomplete' : 'active';
     const [user] = await db
       .update(users)
       .set({
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscriptionId,
         subscriptionPlan: plan,
-        subscriptionStatus: 'active',
+        subscriptionStatus: status,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

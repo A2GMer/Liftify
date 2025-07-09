@@ -217,16 +217,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: `User already has ${plan} plan` });
       }
 
-      // If user already has a subscription, retrieve it
+      // If user already has a subscription, check its status
       if (user.stripeSubscriptionId) {
         const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-        const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string);
-        const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
         
-        return res.json({
-          subscriptionId: subscription.id,
-          clientSecret: paymentIntent.client_secret,
-        });
+        // If subscription is already active, don't create a new one
+        if (subscription.status === 'active') {
+          return res.status(400).json({ message: "User already has an active subscription" });
+        }
+        
+        // If subscription exists but not active, check if we can reuse the payment intent
+        if (subscription.status === 'incomplete' && subscription.latest_invoice) {
+          const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string);
+          if (invoice.payment_intent) {
+            const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
+            
+            // Only return existing payment intent if it's not already succeeded
+            if (paymentIntent.status !== 'succeeded') {
+              return res.json({
+                subscriptionId: subscription.id,
+                clientSecret: paymentIntent.client_secret,
+              });
+            }
+          }
+        }
+        
+        // Cancel existing incomplete subscription and create new one
+        await stripe.subscriptions.cancel(user.stripeSubscriptionId);
       }
 
       // Create new customer if needed
@@ -275,6 +292,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update user with Stripe info but keep plan as free until payment is confirmed
       await storage.updateUserStripeInfo(userId, customerId, subscription.id, 'free');
+      
+      console.log('User updated with subscription info:', { userId, customerId, subscriptionId: subscription.id });
 
       const invoice = subscription.latest_invoice as Stripe.Invoice;
       const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;

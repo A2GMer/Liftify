@@ -61,12 +61,27 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
 
       if (error) {
         console.error('Payment confirmation error:', error);
-        toast({
-          title: t("subscribe.paymentFailed", language),
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsProcessing(false);
+        
+        // Check if the error is about payment already being succeeded
+        if (error.code === 'payment_intent_unexpected_state' && error.payment_intent?.status === 'succeeded') {
+          console.log('Payment already succeeded, redirecting...');
+          toast({
+            title: t("subscribe.paymentSuccess", language),
+            description: t("subscribe.subscribedSuccess", language),
+          });
+          
+          // Redirect to home page
+          setTimeout(() => {
+            window.location.assign('/?payment_success=true');
+          }, 2000);
+        } else {
+          toast({
+            title: t("subscribe.paymentFailed", language),
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsProcessing(false);
+        }
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Payment succeeded
         console.log('Payment succeeded:', paymentIntent.id);
@@ -160,9 +175,11 @@ export default function Subscribe() {
       apiRequest("POST", "/api/create-subscription", { plan: planParam })
         .then((res) => res.json())
         .then((data) => {
+          console.log('Subscription created:', data);
           setClientSecret(data.clientSecret);
         })
         .catch((error) => {
+          console.error('Error creating subscription:', error);
           if (isUnauthorizedError(error)) {
             toast({
               title: "Unauthorized",
@@ -175,10 +192,23 @@ export default function Subscribe() {
             return;
           }
           
-          console.error('Error creating subscription:', error);
+          // Handle specific error cases
+          if (error.message.includes('already has an active subscription')) {
+            toast({
+              title: t("subscribe.alreadySubscribed", language),
+              description: t("subscribe.alreadySubscribedDesc", language),
+              variant: "destructive",
+            });
+            // Redirect to home
+            setTimeout(() => {
+              window.location.assign('/');
+            }, 2000);
+            return;
+          }
+          
           toast({
-            title: "Error",
-            description: "Failed to create subscription. Please try again.",
+            title: t("subscribe.error", language),
+            description: t("subscribe.errorDesc", language),
             variant: "destructive",
           });
         });
