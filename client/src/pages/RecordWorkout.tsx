@@ -494,7 +494,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex items-center space-x-2">
-            <img src={logoWhitePath} alt="Liftify" className="h-5 w-auto" />
             <h1 className="text-xl font-bold">
               {t("record.title", language)}
             </h1>
