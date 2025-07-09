@@ -270,7 +270,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     {language === 'ja' ? 'Free' : 'Free'}
                   </h3>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">¥0</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">{t("pricing.freePrice", language)}</div>
                   <p className="text-gray-600">
                     {language === 'ja' ? '永久無料' : 'Forever free'}
                   </p>
