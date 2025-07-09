@@ -76,6 +76,7 @@ const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
             console.log('Plan updated after payment');
           } catch (updateError) {
             console.error("Error updating plan after payment:", updateError);
+            // Don't block the user flow if plan update fails - webhook will handle it
           }
           
           toast({
@@ -109,6 +110,7 @@ const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
           console.log('Plan updated after payment');
         } catch (updateError) {
           console.error("Error updating plan after payment:", updateError);
+          // Don't block the user flow if plan update fails - webhook will handle it
         }
         
         toast({

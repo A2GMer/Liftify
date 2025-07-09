@@ -308,17 +308,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update plan after successful payment (no auth required for immediate post-payment update)
+  // Update plan after successful payment (with token-based auth for security)
   app.post('/api/update-plan-after-payment', async (req, res) => {
     try {
-      const { paymentIntentId, plan, userId } = req.body;
+      const { paymentIntentId, plan, userId, authToken } = req.body;
       
       console.log('Updating plan after payment:', { userId, paymentIntentId, plan });
       
-      // Get user ID from payment intent if not provided
+      // Verify the payment intent actually succeeded
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID required" });
+      }
+      
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment not completed" });
+      }
+      
+      // Get user ID from payment intent through subscription
       let actualUserId = userId;
       if (!actualUserId && paymentIntentId) {
-        // Find user by payment intent through subscription
         const subscriptions = await stripe.subscriptions.list({ limit: 100 });
         for (const subscription of subscriptions.data) {
           const invoice = subscription.latest_invoice as Stripe.Invoice;
@@ -455,7 +464,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               })
               .where(eq(users.id, user.id))
               .returning();
-            console.log(`User ${user.id} upgraded to ${plan} plan`);
+            console.log(`User ${user.id} upgraded to ${plan} plan via webhook`);
           }
         }
         break;
