@@ -48,7 +48,9 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
 
   const [workoutDate, setWorkoutDate] = useState(() => {
     const now = new Date();
-    return now.toISOString().split('T')[0];
+    const todayDate = now.toISOString().split('T')[0];
+    console.log('Initial workoutDate set to:', todayDate);
+    return todayDate;
   });
   const [workoutTime, setWorkoutTime] = useState(() => {
     const now = new Date();
@@ -480,9 +482,15 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                   id="date"
                   type="date"
                   value={workoutDate}
-                  onChange={(e) => setWorkoutDate(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Date changed to:', e.target.value);
+                    setWorkoutDate(e.target.value);
+                  }}
                   className="focus:ring-coral focus:border-coral"
                 />
+                <div className="text-xs text-gray-500 mt-1">
+                  Current value: {workoutDate}
+                </div>
               </div>
               <div>
                 <Label htmlFor="time">{t("record.time", language)}</Label>
