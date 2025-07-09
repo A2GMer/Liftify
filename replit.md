@@ -118,6 +118,8 @@ Changelog:
 - July 09, 2025. Implemented favicon system with multiple sizes and PWA manifest support
 - July 09, 2025. Added white logo version for black backgrounds across all app pages
 - July 09, 2025. Implemented automatic language detection from browser settings and timezone
+- July 09, 2025. Added auto-population feature for new workouts using most recent workout data
+- July 09, 2025. Implemented comprehensive UI minimization with logo size standardization
 ```
 
 ## User Preferences

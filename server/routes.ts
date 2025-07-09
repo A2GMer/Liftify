@@ -38,6 +38,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/workouts/recent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const workouts = await storage.getWorkoutsByUserId(userId);
+      // Get the most recent workout (first in the array as they're ordered by date DESC)
+      const recentWorkout = workouts.length > 0 ? workouts[0] : null;
+      res.json(recentWorkout);
+    } catch (error) {
+      console.error("Error fetching recent workout:", error);
+      res.status(500).json({ message: "Failed to fetch recent workout" });
+    }
+  });
+
   app.get('/api/workouts/:id', isAuthenticated, async (req: any, res) => {
     try {
       const workoutId = parseInt(req.params.id);

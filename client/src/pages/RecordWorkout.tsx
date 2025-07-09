@@ -101,10 +101,18 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     retry: false,
   });
 
+  // Load most recent workout data for auto-population when creating new workout
+  const { data: recentWorkout, isLoading: loadingRecentWorkout } = useQuery({
+    queryKey: ['/api/workouts/recent'],
+    enabled: !editingWorkoutId && isAuthenticated,
+    retry: false,
+  });
+
   // Initialize form with default values
   const initializeForm = () => {
     console.log('Initializing form with editingWorkoutId:', editingWorkoutId);
     console.log('Existing workout data:', existingWorkout);
+    console.log('Recent workout data:', recentWorkout);
     
     if (editingWorkoutId && existingWorkout) {
       console.log('Loading existing workout data:', existingWorkout);
@@ -137,40 +145,59 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
       setWorkoutTime(now.toTimeString().slice(0, 5));
       setWorkoutNotes('');
       setAllOutFeeling([5]);
-      // Reset to default sets
-      setSets([
-        {
-          setNumber: 1,
-          weight: 65,
-          reps: 5,
-          powerBelt: false,
-          buttUp: false,
-          assistance: false,
-          failed: false,
+      
+      // Auto-populate with recent workout data if available
+      if (recentWorkout && recentWorkout.sets && recentWorkout.sets.length > 0) {
+        console.log('Auto-populating with recent workout data:', recentWorkout);
+        const recentSets = recentWorkout.sets.map((set: any, index: number) => ({
+          setNumber: index + 1,
+          weight: parseFloat(set.weight) || 65,
+          reps: set.reps || 5,
+          powerBelt: Boolean(set.powerBelt),
+          buttUp: Boolean(set.buttUp),
+          assistance: Boolean(set.assistance),
+          failed: false, // Reset failed status for new workout
           cheating: false,
-          notes: '',
+          notes: '', // Reset notes for new workout
           showNotes: false,
-        },
-        {
-          setNumber: 2,
-          weight: 65,
-          reps: 5,
-          powerBelt: false,
-          buttUp: false,
-          assistance: false,
-          failed: false,
-          cheating: false,
-          notes: '',
-          showNotes: false,
-        },
-      ]);
+        }));
+        setSets(recentSets);
+      } else {
+        // Fallback to default sets if no recent workout
+        setSets([
+          {
+            setNumber: 1,
+            weight: 65,
+            reps: 5,
+            powerBelt: false,
+            buttUp: false,
+            assistance: false,
+            failed: false,
+            cheating: false,
+            notes: '',
+            showNotes: false,
+          },
+          {
+            setNumber: 2,
+            weight: 65,
+            reps: 5,
+            powerBelt: false,
+            buttUp: false,
+            assistance: false,
+            failed: false,
+            cheating: false,
+            notes: '',
+            showNotes: false,
+          },
+        ]);
+      }
     }
   };
 
   // Set current date and time or load existing workout data
   useEffect(() => {
     initializeForm();
-  }, [editingWorkoutId, existingWorkout]);
+  }, [editingWorkoutId, existingWorkout, recentWorkout]);
 
   // Helper functions for tap-based controls
   const updateSetWeight = (index: number, increment: boolean) => {
@@ -278,6 +305,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/workouts/recent'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/user-stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/daily-volume'] });
       
