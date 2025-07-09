@@ -1,4 +1,4 @@
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { TopNav } from "@/components/TopNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, TrendingUp, Activity, Heart, Zap, Shield } from "lucide-react";
@@ -22,7 +22,9 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
           <img src={logoWhitePath} alt="Liftify" className="h-8 w-auto" />
           <span className="text-white font-bold text-xl drop-shadow-lg">Liftify</span>
         </div>
-        <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
+        <div className="absolute top-0 right-0 p-4">
+          <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} showSignOut={false} />
+        </div>
       </nav>
       
       {/* Hero Section */}

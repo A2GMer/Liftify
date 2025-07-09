@@ -43,6 +43,7 @@ export const translations = {
     "loading": "Loading...",
     "error.generic": "Something went wrong. Please try again.",
     "success.workoutSaved": "Workout saved successfully!",
+    "auth.signOut": "Sign Out",
   },
   ja: {
     "hero.title": "Liftify",
@@ -88,6 +89,7 @@ export const translations = {
     "loading": "読み込み中...",
     "error.generic": "エラーが発生しました。もう一度お試しください。",
     "success.workoutSaved": "ワークアウトが正常に保存されました！",
+    "auth.signOut": "サインアウト",
   },
   fr: {
     "hero.title": "Liftify",
@@ -133,6 +135,7 @@ export const translations = {
     "loading": "Chargement...",
     "error.generic": "Une erreur s'est produite. Veuillez réessayer.",
     "success.workoutSaved": "Entraînement sauvegardé avec succès !",
+    "auth.signOut": "Se déconnecter",
   },
   de: {
     "hero.title": "Liftify",
@@ -178,6 +181,7 @@ export const translations = {
     "loading": "Laden...",
     "error.generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "success.workoutSaved": "Training erfolgreich gespeichert!",
+    "auth.signOut": "Abmelden",
   },
 };
 

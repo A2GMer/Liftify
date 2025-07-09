@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { TopNav } from "@/components/TopNav";
 import { WorkoutChart } from "@/components/WorkoutChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,7 +71,9 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
+      <div className="fixed top-4 right-4 z-50">
+        <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} showSignOut={true} />
+      </div>
       
       {/* Header */}
       <header className="bg-black text-white p-4 sticky top-0 z-40">
