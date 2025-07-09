@@ -286,6 +286,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Cancel subscription and downgrade to free
+  app.post('/api/cancel-subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Cancel Stripe subscription if it exists
+      if (user.stripeSubscriptionId) {
+        try {
+          await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+        } catch (stripeError) {
+          console.error("Error canceling Stripe subscription:", stripeError);
+          // Continue with local cancellation even if Stripe fails
+        }
+      }
+
+      // Update user to free plan
+      const updatedUser = await storage.cancelUserSubscription(userId);
+      
+      res.json({
+        message: "Subscription canceled successfully",
+        user: updatedUser
+      });
+    } catch (error: any) {
+      console.error("Error canceling subscription:", error);
+      res.status(500).json({ message: "Failed to cancel subscription: " + error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

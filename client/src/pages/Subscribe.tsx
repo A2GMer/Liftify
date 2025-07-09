@@ -78,6 +78,7 @@ export default function Subscribe() {
   const [clientSecret, setClientSecret] = useState("");
   const [plan, setPlan] = useState<string>("");
   const [userPlan, setUserPlan] = useState<string>("free");
+  const [isDowngrading, setIsDowngrading] = useState(false);
   const { language, changeLanguage } = useLanguage();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const { toast } = useToast();
@@ -146,6 +147,33 @@ export default function Subscribe() {
         });
     }
   }, [isAuthenticated, authLoading, user, language, toast]);
+
+  const handleDowngrade = async () => {
+    if (userPlan === 'free') return;
+    
+    setIsDowngrading(true);
+    
+    try {
+      await apiRequest("POST", "/api/cancel-subscription");
+      
+      toast({
+        title: t("subscribe.downgradeSuccess", language),
+        description: t("subscribe.downgradeSuccessDesc", language),
+      });
+      
+      // Refresh page to reflect changes
+      window.location.reload();
+    } catch (error) {
+      console.error('Error downgrading:', error);
+      toast({
+        title: t("subscribe.downgradeError", language),
+        description: t("subscribe.downgradeErrorDesc", language),
+        variant: "destructive",
+      });
+    } finally {
+      setIsDowngrading(false);
+    }
+  };
 
   const getPlanInfo = () => {
     if (plan === 'pro') {
@@ -254,10 +282,16 @@ export default function Subscribe() {
                 </li>
               </ul>
               <Button 
-                disabled={userPlan === 'free'}
-                className="w-full bg-gray-500 cursor-not-allowed"
+                disabled={userPlan === 'free' || isDowngrading}
+                className={`w-full ${userPlan === 'free' ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                onClick={() => userPlan !== 'free' && handleDowngrade()}
               >
-                {userPlan === 'free' ? t("subscribe.currentPlan", language) : t("subscribe.downgrade", language)}
+                {isDowngrading 
+                  ? t("subscribe.processing", language)
+                  : userPlan === 'free' 
+                    ? t("subscribe.currentPlan", language) 
+                    : t("subscribe.downgrade", language)
+                }
               </Button>
             </CardContent>
           </Card>

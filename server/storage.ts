@@ -18,6 +18,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan?: string): Promise<User>;
+  cancelUserSubscription(userId: string): Promise<User>;
   
   // Workout operations
   createWorkout(workout: InsertWorkout): Promise<Workout>;
@@ -71,6 +72,20 @@ export class DatabaseStorage implements IStorage {
         stripeSubscriptionId: subscriptionId,
         subscriptionPlan: plan,
         subscriptionStatus: 'active',
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async cancelUserSubscription(userId: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'canceled',
+        stripeSubscriptionId: null,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
