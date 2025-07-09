@@ -186,6 +186,27 @@ export default function Subscribe() {
     }
   };
 
+  const handlePlanSelect = (selectedPlan: string) => {
+    if (selectedPlan === 'pro' && userPlan !== 'pro') {
+      // If payment form is already shown and user hasn't filled it
+      if (plan === 'pro' && clientSecret) {
+        // Scroll to payment form
+        const paymentForm = document.querySelector('[data-testid="payment-form"]');
+        if (paymentForm) {
+          paymentForm.scrollIntoView({ behavior: 'smooth' });
+          toast({
+            title: t("subscribe.paymentInfoRequired", language),
+            description: t("subscribe.paymentInfoRequiredDesc", language),
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      // Otherwise proceed with plan selection
+      window.location.href = '/subscribe?plan=pro';
+    }
+  };
+
   const getPlanInfo = () => {
     if (plan === 'pro') {
       return {
@@ -343,7 +364,7 @@ export default function Subscribe() {
               <Button 
                 disabled={userPlan === 'pro'}
                 className={`w-full ${userPlan === 'pro' ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                onClick={() => window.location.href = '/subscribe?plan=pro'}
+                onClick={() => handlePlanSelect('pro')}
               >
                 {userPlan === 'pro' ? t("subscribe.currentPlan", language) : t("subscribe.selectPlan", language)}
               </Button>
@@ -401,7 +422,7 @@ export default function Subscribe() {
 
         {/* Selected Plan Payment Form */}
         {plan && plan !== 'free' && userPlan !== plan && clientSecret && (
-          <Card>
+          <Card data-testid="payment-form">
             <CardHeader>
               <CardTitle className="text-center">
                 {t("subscribe.paymentInfo", language)} - {plan === 'pro' ? t("pricing.pro", language) : t("pricing.ultimate", language)}

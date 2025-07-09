@@ -93,7 +93,7 @@ export const translations = {
     "subscribe.downgradeError": "Downgrade Failed",
     "subscribe.downgradeErrorDesc": "Failed to downgrade subscription. Please try again.",
     "subscribe.paymentInfoRequired": "Payment Information Required",
-    "subscribe.paymentInfoRequiredDesc": "Please enter your payment information to continue.",
+    "subscribe.paymentInfoRequiredDesc": "Please fill in the payment form below to continue.",
     
     // Pricing
     "pricing.title": "Choose Your Plan",
@@ -206,7 +206,7 @@ export const translations = {
     "subscribe.downgradeError": "ダウングレード失敗",
     "subscribe.downgradeErrorDesc": "サブスクリプションのダウングレードに失敗しました。再度お試しください。",
     "subscribe.paymentInfoRequired": "決済情報の入力が必要です",
-    "subscribe.paymentInfoRequiredDesc": "決済情報を入力してから続行してください。",
+    "subscribe.paymentInfoRequiredDesc": "下記の決済情報フォームに入力してから続行してください。",
     
     // Pricing
     "pricing.title": "プランを選択",
@@ -324,7 +324,7 @@ export const translations = {
     "subscribe.downgradeError": "Échec de la Rétrogradation",
     "subscribe.downgradeErrorDesc": "Échec de la rétrogradation de l'abonnement. Veuillez réessayer.",
     "subscribe.paymentInfoRequired": "Informations de Paiement Requises",
-    "subscribe.paymentInfoRequiredDesc": "Veuillez entrer vos informations de paiement pour continuer.",
+    "subscribe.paymentInfoRequiredDesc": "Veuillez remplir le formulaire de paiement ci-dessous pour continuer.",
     
     // Pricing
     "pricing.title": "Choisissez Votre Plan",
@@ -442,7 +442,7 @@ export const translations = {
     "subscribe.downgradeError": "Downgrade Fehlgeschlagen",
     "subscribe.downgradeErrorDesc": "Downgrade des Abonnements fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "subscribe.paymentInfoRequired": "Zahlungsinformationen Erforderlich",
-    "subscribe.paymentInfoRequiredDesc": "Bitte geben Sie Ihre Zahlungsinformationen ein, um fortzufahren.",
+    "subscribe.paymentInfoRequiredDesc": "Bitte füllen Sie das untenstehende Zahlungsformular aus, um fortzufahren.",
     
     // Pricing
     "pricing.title": "Wählen Sie Ihren Plan",
