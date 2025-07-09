@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { TopNav } from "@/components/TopNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, User, CreditCard, Calendar, Trophy } from "lucide-react";
+import { ArrowLeft, User, CreditCard, Calendar, Trophy, Check } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -21,6 +22,13 @@ interface MyPageProps {
 export default function MyPage({ onBack, onPlanChange, language, onLanguageChange }: MyPageProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+
+  // Fetch subscription status
+  const { data: subscriptionStatus, isLoading: subscriptionLoading } = useQuery({
+    queryKey: ['/api/subscription-status'],
+    enabled: isAuthenticated,
+    retry: false,
+  });
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -176,24 +184,103 @@ export default function MyPage({ onBack, onPlanChange, language, onLanguageChang
         </Card>
       </section>
 
-      {/* Stats Summary */}
+      {/* Plan Selection */}
       <section className="p-4">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Trophy className="w-5 h-5" />
-              <span>{t("myPage.workoutStats", language)}</span>
+              <CreditCard className="w-5 h-5" />
+              <span>{t("pricing.title", language)}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-coral">-</div>
-                <div className="text-sm text-gray-600">{t("myPage.totalWorkouts", language)}</div>
+            <div className="space-y-4">
+              {/* Free Plan */}
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold">{t("pricing.free", language)}</h3>
+                      {subscriptionStatus?.plan === 'free' && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          <Check className="w-3 h-3 mr-1" />
+                          {t("pricing.current", language)}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">¥0</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("pricing.freeFeature1", language)}</p>
+                  </div>
+                  <Button
+                    disabled={subscriptionStatus?.plan === 'free'}
+                    variant={subscriptionStatus?.plan === 'free' ? "secondary" : "outline"}
+                    size="sm"
+                  >
+                    {subscriptionStatus?.plan === 'free' ? t("pricing.current", language) : t("pricing.downgrade", language)}
+                  </Button>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-coral">-</div>
-                <div className="text-sm text-gray-600">{t("myPage.totalVolume", language)}</div>
+
+              {/* Pro Plan */}
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold">{t("pricing.pro", language)}</h3>
+                      {subscriptionStatus?.plan === 'pro' && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          <Check className="w-3 h-3 mr-1" />
+                          {t("pricing.current", language)}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">¥500 / {t("subscribe.perMonth", language)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("subscribe.proFeature1", language)}</p>
+                  </div>
+                  <Button
+                    disabled={subscriptionStatus?.plan === 'pro'}
+                    variant={subscriptionStatus?.plan === 'pro' ? "secondary" : "default"}
+                    size="sm"
+                    onClick={() => {
+                      if (subscriptionStatus?.plan !== 'pro') {
+                        window.location.href = '/subscribe?plan=pro';
+                      }
+                    }}
+                  >
+                    {subscriptionStatus?.plan === 'pro' ? t("pricing.current", language) : t("pricing.upgrade", language)}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Ultimate Plan */}
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold">{t("pricing.ultimate", language)}</h3>
+                      {subscriptionStatus?.plan === 'ultimate' && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          <Check className="w-3 h-3 mr-1" />
+                          {t("pricing.current", language)}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">¥980 / {t("subscribe.perMonth", language)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("subscribe.ultimateFeature1", language)}</p>
+                  </div>
+                  <Button
+                    disabled={subscriptionStatus?.plan === 'ultimate'}
+                    variant={subscriptionStatus?.plan === 'ultimate' ? "secondary" : "default"}
+                    size="sm"
+                    onClick={() => {
+                      if (subscriptionStatus?.plan !== 'ultimate') {
+                        window.location.href = '/subscribe?plan=ultimate';
+                      }
+                    }}
+                  >
+                    {subscriptionStatus?.plan === 'ultimate' ? t("pricing.current", language) : t("pricing.upgrade", language)}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
