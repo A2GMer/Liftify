@@ -634,7 +634,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'powerBelt')}
                     variant={set.powerBelt ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
                   >
                     ベルト
                   </Button>
@@ -643,7 +643,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'buttUp')}
                     variant={set.buttUp ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
                   >
                     {t("record.sets.buttUp", language)}
                   </Button>
@@ -652,7 +652,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'assistance')}
                     variant={set.assistance ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
                   >
                     {t("record.sets.assistance", language)}
                   </Button>
@@ -661,7 +661,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'failed')}
                     variant={set.failed ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-600 hover:text-white border-red-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'bg-transparent hover:bg-red-600 hover:text-white border-red-300'}`}
                   >
                     つぶれた
                   </Button>
@@ -670,7 +670,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'formFocused')}
                     variant={set.formFocused ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-600 hover:text-white border-blue-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 hover:bg-blue-700' : 'bg-transparent hover:bg-blue-600 hover:text-white border-blue-300'}`}
                   >
                     効き重視
                   </Button>
@@ -679,7 +679,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'repFocused')}
                     variant={set.repFocused ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-600 hover:text-white border-green-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 hover:bg-green-700' : 'bg-transparent hover:bg-green-600 hover:text-white border-green-300'}`}
                   >
                     回数重視
                   </Button>
@@ -688,7 +688,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleCheating(index)}
                     variant={set.cheating ? "default" : "outline"}
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 hover:bg-yellow-700' : 'hover:bg-yellow-600 hover:text-white border-yellow-300'}`}
+                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-transparent hover:bg-yellow-600 hover:text-white border-yellow-300'}`}
                   >
                     チーティング
                   </Button>
