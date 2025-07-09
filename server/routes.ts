@@ -200,49 +200,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check subscription status
-  app.get('/api/subscription-status', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      // If user has no subscription
-      if (!user.stripeSubscriptionId) {
-        return res.json({
-          hasSubscription: false,
-          plan: 'free',
-          status: 'active'
-        });
-      }
-
-      // Check Stripe subscription status
-      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-      const currentPlan = subscription.items.data[0].price.product;
-      
-      // Determine plan name from product ID
-      let planName = 'free';
-      if (currentPlan === process.env.STRIPE_PRO_PRODUCT_ID) {
-        planName = 'pro';
-      } else if (currentPlan === process.env.STRIPE_ULTIMATE_PRODUCT_ID) {
-        planName = 'ultimate';
-      }
-      
-      res.json({
-        hasSubscription: true,
-        plan: planName,
-        status: subscription.status,
-        subscriptionId: subscription.id
-      });
-    } catch (error: any) {
-      console.error("Error checking subscription status:", error);
-      res.status(500).json({ message: "Failed to check subscription status" });
-    }
-  });
-
   // Stripe subscription routes
   app.post('/api/create-subscription', isAuthenticated, async (req: any, res) => {
     try {
