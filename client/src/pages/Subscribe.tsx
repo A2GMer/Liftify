@@ -165,15 +165,23 @@ export default function Subscribe() {
     setIsDowngrading(true);
     
     try {
-      await apiRequest("POST", "/api/cancel-subscription");
+      const response = await apiRequest("POST", "/api/cancel-subscription");
+      const result = await response.json();
+      
+      console.log('Downgrade response:', result);
       
       toast({
         title: t("subscribe.downgradeSuccess", language),
         description: t("subscribe.downgradeSuccessDesc", language),
       });
       
-      // Refresh page to reflect changes
-      window.location.reload();
+      // Update local state immediately
+      setUserPlan('free');
+      
+      // Redirect to home page to reflect changes
+      setTimeout(() => {
+        window.location.assign('/');
+      }, 1000);
     } catch (error) {
       console.error('Error downgrading:', error);
       toast({
