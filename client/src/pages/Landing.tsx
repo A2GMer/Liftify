@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, TrendingUp, Activity, Heart, Zap, Shield } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import chestVideoPath from "@assets/chest_1752043528152.mp4";
+import logoPath from "@assets/logo-trans_1752044551302.png";
 
 interface LandingProps {
   onGetStarted: () => void;
@@ -15,7 +16,13 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
 
   return (
     <div className="min-h-screen bg-white">
-      <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
+      <nav className="absolute top-0 left-0 right-0 z-50 p-4 flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <img src={logoPath} alt="Liftify" className="h-8 w-auto" />
+          <span className="text-white font-bold text-xl drop-shadow-lg">Liftify</span>
+        </div>
+        <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
+      </nav>
       
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
