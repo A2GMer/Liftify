@@ -80,7 +80,6 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <img src={logoWhitePath} alt="Liftify" className="h-6 w-auto" />
-            <h1 className="text-xl font-bold">Liftify</h1>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm">
