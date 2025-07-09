@@ -3,9 +3,11 @@ import { createServer, type Server } from "http";
 import express from "express";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertWorkoutSchema, insertSetSchema } from "@shared/schema";
+import { insertWorkoutSchema, insertSetSchema, users } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 const createWorkoutWithSetsSchema = z.object({
   workout: insertWorkoutSchema.omit({ userId: true }),
@@ -356,16 +358,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Update user plan to paid plan with active status
-      const [updatedUser] = await db
-        .update(users)
-        .set({
-          subscriptionPlan: plan,
-          subscriptionStatus: 'active',
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, userId))
-        .returning();
+      // Update user plan using storage method instead of direct db call
+      const updatedUser = await storage.updateUserStripeInfo(userId, user.stripeCustomerId, user.stripeSubscriptionId || '', plan);
       
       console.log('User plan updated successfully:', updatedUser);
       
@@ -475,15 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('Webhook - Determined plan:', plan, 'for product:', price.product);
               
               // Update user plan only after successful payment
-              const [updatedUser] = await db
-                .update(users)
-                .set({
-                  subscriptionPlan: plan,
-                  subscriptionStatus: 'active',
-                  updatedAt: new Date(),
-                })
-                .where(eq(users.id, user.id))
-                .returning();
+              const updatedUser = await storage.updateUserStripeInfo(user.id, customerId, user.stripeSubscriptionId || '', plan);
               console.log(`Webhook - User ${user.id} upgraded to ${plan} plan successfully`);
             } else {
               console.error('Webhook - User not found for customer:', customerId);
