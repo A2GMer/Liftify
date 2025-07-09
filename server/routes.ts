@@ -41,10 +41,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/workouts/:id', isAuthenticated, async (req: any, res) => {
     try {
       const workoutId = parseInt(req.params.id);
+      if (isNaN(workoutId)) {
+        return res.status(400).json({ message: 'Invalid workout ID' });
+      }
+      
       const workout = await storage.getWorkoutById(workoutId);
       if (!workout) {
         return res.status(404).json({ message: "Workout not found" });
       }
+      
+      // Check if the workout belongs to the authenticated user
+      if (workout.userId !== req.user.claims.sub) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
       res.json(workout);
     } catch (error) {
       console.error("Error fetching workout:", error);

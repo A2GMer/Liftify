@@ -42,8 +42,14 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [workoutDate, setWorkoutDate] = useState('');
-  const [workoutTime, setWorkoutTime] = useState('');
+  const [workoutDate, setWorkoutDate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  });
+  const [workoutTime, setWorkoutTime] = useState(() => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  });
   const [workoutNotes, setWorkoutNotes] = useState('');
   const [allOutFeeling, setAllOutFeeling] = useState([5]);
   const [sets, setSets] = useState<SetData[]>([
@@ -94,35 +100,76 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     retry: false,
   });
 
-  // Set current date and time or load existing workout data
-  useEffect(() => {
+  // Initialize form with default values
+  const initializeForm = () => {
+    console.log('Initializing form with editingWorkoutId:', editingWorkoutId);
+    console.log('Existing workout data:', existingWorkout);
+    
     if (editingWorkoutId && existingWorkout) {
       // Load existing workout data
-      setWorkoutDate(existingWorkout.date);
-      setWorkoutTime(existingWorkout.time);
+      console.log('Loading existing workout data:', existingWorkout);
+      setWorkoutDate(existingWorkout.date || '');
+      setWorkoutTime(existingWorkout.time || '');
       setWorkoutNotes(existingWorkout.notes || '');
       setAllOutFeeling([existingWorkout.allOutFeeling || 5]);
       
       // Load sets data
-      const existingSets = existingWorkout.sets?.map((set: any) => ({
-        setNumber: set.setNumber,
-        weight: parseFloat(set.weight),
-        reps: set.reps,
-        powerBelt: set.powerBelt,
-        buttUp: set.buttUp,
-        assistance: set.assistance,
-        failed: set.failed,
-        cheating: false,
-        notes: set.notes || '',
-        showNotes: false,
-      }));
-      setSets(existingSets || []);
+      if (existingWorkout.sets && existingWorkout.sets.length > 0) {
+        const existingSets = existingWorkout.sets.map((set: any) => ({
+          setNumber: set.setNumber,
+          weight: parseFloat(set.weight) || 0,
+          reps: set.reps || 0,
+          powerBelt: Boolean(set.powerBelt),
+          buttUp: Boolean(set.buttUp),
+          assistance: Boolean(set.assistance),
+          failed: Boolean(set.failed),
+          cheating: false,
+          notes: set.notes || '',
+          showNotes: false,
+        }));
+        console.log('Setting existing sets:', existingSets);
+        setSets(existingSets);
+      }
     } else if (!editingWorkoutId) {
       // Set current date and time for new workout
       const now = new Date();
       setWorkoutDate(now.toISOString().split('T')[0]);
       setWorkoutTime(now.toTimeString().slice(0, 5));
+      setWorkoutNotes('');
+      setAllOutFeeling([5]);
+      // Reset to default sets
+      setSets([
+        {
+          setNumber: 1,
+          weight: 65,
+          reps: 5,
+          powerBelt: false,
+          buttUp: false,
+          assistance: false,
+          failed: false,
+          cheating: false,
+          notes: '',
+          showNotes: false,
+        },
+        {
+          setNumber: 2,
+          weight: 65,
+          reps: 5,
+          powerBelt: false,
+          buttUp: false,
+          assistance: false,
+          failed: false,
+          cheating: false,
+          notes: '',
+          showNotes: false,
+        },
+      ]);
     }
+  };
+
+  // Set current date and time or load existing workout data
+  useEffect(() => {
+    initializeForm();
   }, [editingWorkoutId, existingWorkout]);
 
   // Helper functions for tap-based controls
