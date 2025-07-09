@@ -212,8 +212,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Check if user already has this plan
-      if (user.subscriptionPlan === plan && user.subscriptionStatus === 'active') {
+      // Check if user already has this plan and it's truly active
+      if (user.subscriptionPlan === plan && user.subscriptionStatus === 'active' && user.subscriptionPlan !== 'free') {
         return res.status(400).json({ message: `User already has ${plan} plan` });
       }
 
@@ -221,8 +221,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user.stripeSubscriptionId) {
         const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
         
-        // If subscription is already active, don't create a new one
-        if (subscription.status === 'active') {
+        // If subscription is already active and user has paid plan, don't create a new one
+        if (subscription.status === 'active' && user.subscriptionPlan !== 'free') {
           return res.status(400).json({ message: "User already has an active subscription" });
         }
         
@@ -394,7 +394,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const plan = planMapping[price.product as string] || 'free';
             
             // Update user plan only after successful payment
-            await storage.updateUserStripeInfo(user.id, customerId, subscription.id, plan);
+            const [updatedUser] = await db
+              .update(users)
+              .set({
+                subscriptionPlan: plan,
+                subscriptionStatus: 'active',
+                updatedAt: new Date(),
+              })
+              .where(eq(users.id, user.id))
+              .returning();
             console.log(`User ${user.id} upgraded to ${plan} plan`);
           }
         }

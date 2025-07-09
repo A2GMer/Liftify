@@ -71,7 +71,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan: string = 'pro'): Promise<User> {
-    const status = plan === 'free' ? 'incomplete' : 'active';
+    const status = plan === 'free' ? 'incomplete' : 'incomplete'; // Always incomplete until payment is confirmed
     const [user] = await db
       .update(users)
       .set({

@@ -161,7 +161,7 @@ export default function Subscribe() {
     setUserPlan(user.subscriptionPlan || 'free');
     
     // If user is trying to subscribe to a plan they already have, show error
-    if (user.subscriptionPlan === planParam && user.subscriptionStatus === 'active') {
+    if (user.subscriptionPlan === planParam && user.subscriptionStatus === 'active' && user.subscriptionPlan !== 'free') {
       toast({
         title: t("subscribe.alreadySubscribed", language),
         description: t("subscribe.alreadySubscribedDesc", language),
@@ -171,7 +171,7 @@ export default function Subscribe() {
     }
     
     // Only create subscription for pro plan (ultimate is disabled)
-    if (planParam === 'pro' && user.subscriptionPlan !== 'pro') {
+    if (planParam === 'pro' && (user.subscriptionPlan !== 'pro' || user.subscriptionStatus !== 'active')) {
       apiRequest("POST", "/api/create-subscription", { plan: planParam })
         .then((res) => res.json())
         .then((data) => {
