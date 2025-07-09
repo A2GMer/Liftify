@@ -211,16 +211,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // If user already has a subscription, retrieve it
+      // Check if user already has an active subscription
       if (user.stripeSubscriptionId) {
         const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-        const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string);
-        const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
         
-        return res.json({
-          subscriptionId: subscription.id,
-          clientSecret: paymentIntent.client_secret,
-        });
+        // If subscription is active and user tries to subscribe to the same plan, prevent it
+        if (subscription.status === 'active' || subscription.status === 'trialing') {
+          const currentPlan = subscription.items.data[0].price.product;
+          const requestedProductId = plan === 'pro' ? process.env.STRIPE_PRO_PRODUCT_ID : process.env.STRIPE_ULTIMATE_PRODUCT_ID;
+          
+          if (currentPlan === requestedProductId) {
+            return res.status(400).json({ 
+              message: "already_subscribed",
+              currentPlan: plan,
+              details: `You are already subscribed to the ${plan} plan`
+            });
+          }
+        }
+        
+        // If trying to subscribe to a different plan, allow it but warn about plan change
+        if (subscription.status === 'active' || subscription.status === 'trialing') {
+          // For now, prevent any plan changes and suggest canceling first
+          return res.status(400).json({ 
+            message: "plan_change_required",
+            details: "Please cancel your current subscription before subscribing to a different plan"
+          });
+        }
       }
 
       // Create new customer if needed

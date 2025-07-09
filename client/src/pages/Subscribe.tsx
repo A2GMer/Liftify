@@ -121,7 +121,45 @@ export default function Subscribe() {
           }, 500);
           return;
         }
+        
+        // Handle subscription-specific errors
+        if (error.message.includes('400:')) {
+          try {
+            const errorData = JSON.parse(error.message.split('400: ')[1]);
+            if (errorData.message === 'already_subscribed') {
+              toast({
+                title: t("subscribe.alreadySubscribed", language),
+                description: t("subscribe.alreadySubscribedDesc", language).replace('{plan}', errorData.currentPlan),
+                variant: "destructive",
+              });
+              // Redirect back to home after showing error
+              setTimeout(() => {
+                window.history.back();
+              }, 2000);
+              return;
+            } else if (errorData.message === 'plan_change_required') {
+              toast({
+                title: t("subscribe.planChangeRequired", language),
+                description: t("subscribe.planChangeRequiredDesc", language),
+                variant: "destructive",
+              });
+              setTimeout(() => {
+                window.history.back();
+              }, 2000);
+              return;
+            }
+          } catch (parseError) {
+            // If parsing fails, show generic error
+            console.error('Error parsing subscription error:', parseError);
+          }
+        }
+        
         console.error('Error creating subscription:', error);
+        toast({
+          title: t("subscribe.error", language),
+          description: t("subscribe.errorDesc", language),
+          variant: "destructive",
+        });
       });
   }, [isAuthenticated, authLoading, toast]);
 
