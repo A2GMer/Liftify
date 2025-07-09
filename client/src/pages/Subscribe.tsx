@@ -520,17 +520,6 @@ export default function Subscribe() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Test card info */}
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-800 mb-2">テスト用カード情報</h4>
-                  <div className="text-sm text-blue-700 space-y-1">
-                    <div>カード番号: 4242 4242 4242 4242</div>
-                    <div>有効期限: 12/34</div>
-                    <div>CVC: 123</div>
-                    <div>郵便番号: 12345</div>
-                  </div>
-                </div>
-                
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <CheckoutForm plan={plan} user={user} />
                 </Elements>
