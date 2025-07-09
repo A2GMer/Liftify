@@ -154,6 +154,8 @@ Changelog:
 - July 09, 2025. Added Stripe environment separation system with test/production configuration switching
 - July 09, 2025. Implemented comprehensive security measures: SQL injection prevention, XSS protection, input validation, rate limiting, and CORS configuration
 - July 09, 2025. Added language-specific Stripe product ID management system for multi-language pricing support
+- July 09, 2025. Implemented comprehensive language-specific pricing display system with dynamic currency formatting (¥500 JP, $2.99 EN, 2,99€ FR/DE)
+- July 09, 2025. Added production language-specific Pro product IDs: JA (prod_SeFmbBUb4FV0a4), EN (prod_SeJg6G4ndBDDjH), FR/DE (prod_SeJhEW6uDfGDxb)
 ```
 
 ## User Preferences
