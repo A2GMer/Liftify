@@ -256,6 +256,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
         assistance: set.assistance,
         failed: set.failed,
         notes: set.notes,
+        isCheatingSet: false,
       });
       
       // Add cheating set if it exists

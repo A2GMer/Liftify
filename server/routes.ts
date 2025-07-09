@@ -59,7 +59,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User ID not found" });
       }
 
-      const { workout: workoutData, sets: setsData } = createWorkoutWithSetsSchema.parse(req.body);
+      console.log("Received workout data:", JSON.stringify(req.body, null, 2));
+      
+      const { workout: workoutData, sets: setsData } = req.body;
       
       // Create workout
       const workout = await storage.createWorkout({
@@ -70,6 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create sets
       const sets = [];
       for (const setData of setsData) {
+        console.log("Processing set data:", setData);
         const set = await storage.createSet({
           ...setData,
           workoutId: workout.id,
