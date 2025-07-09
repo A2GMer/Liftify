@@ -12,7 +12,6 @@ import Subscribe from "@/pages/Subscribe";
 import MyPage from "@/pages/MyPage";
 import NotFound from "@/pages/not-found";
 import { useState, useEffect } from "react";
-import React from "react";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -24,15 +23,14 @@ function Router() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('payment_intent') && urlParams.get('redirect_status') === 'succeeded') {
-      // Payment was successful, show success message and clean URL
-      const newUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-      // Show success notification would go here if needed
+      // Payment was successful, clean URL and redirect to home
+      window.history.replaceState({}, '', window.location.origin);
+      setCurrentView('home');
     }
   }, []);
 
   const handleGetStarted = () => {
-    window.location.href = "/api/login";
+    window.location.assign("/api/login");
   };
 
   const handleNewWorkout = () => {
@@ -59,8 +57,8 @@ function Router() {
   };
 
   const handlePlanChange = () => {
-    setCurrentView('home'); // Navigate to home first, then to subscribe
-    window.location.href = "/subscribe";
+    // Use window.location.assign instead of direct href assignment
+    window.location.assign("/subscribe");
   };
 
   return (

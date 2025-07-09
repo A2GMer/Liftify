@@ -48,7 +48,7 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/`,
+        return_url: window.location.origin,
       },
     });
 
@@ -58,14 +58,14 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
         description: error.message,
         variant: "destructive",
       });
+      setIsProcessing(false);
     } else {
       toast({
         title: t("subscribe.paymentSuccess", language),
         description: t("subscribe.subscribedSuccess", language),
       });
+      // Don't set processing to false here as we're redirecting
     }
-    
-    setIsProcessing(false);
   };
 
   return (
@@ -103,7 +103,7 @@ export default function Subscribe() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.assign("/api/login");
       }, 500);
       return;
     }
@@ -144,7 +144,7 @@ export default function Subscribe() {
               variant: "destructive",
             });
             setTimeout(() => {
-              window.location.href = "/api/login";
+              window.location.assign("/api/login");
             }, 500);
             return;
           }
@@ -203,7 +203,7 @@ export default function Subscribe() {
         }
       }
       // Otherwise proceed with plan selection
-      window.location.href = '/subscribe?plan=pro';
+      window.location.assign('/subscribe?plan=pro');
     }
   };
 
