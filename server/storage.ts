@@ -254,7 +254,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(workouts, eq(sets.workoutId, workouts.id))
       .where(eq(workouts.userId, userId));
 
-    // Calculate 1RM using the table
+    // Calculate 1RM using the same table as the chart
     let highest1RM = 0;
     allSets.forEach(set => {
       // Skip failed sets
@@ -263,12 +263,9 @@ export class DatabaseStorage implements IStorage {
       const weight = parseFloat(set.weight);
       const reps = set.reps;
 
-      // For 1 rep, the weight is the 1RM
-      if (reps === 1) {
-        highest1RM = Math.max(highest1RM, weight);
-      } else if (reps >= 2 && reps <= 12) {
-        // Use simplified calculation for 1RM: weight * (1 + (reps / 30))
-        const estimated1RM = weight * (1 + (reps / 30));
+      // Use the same calculation method as the chart
+      const estimated1RM = this.calculate1RM(weight, reps);
+      if (estimated1RM) {
         highest1RM = Math.max(highest1RM, estimated1RM);
       }
     });
