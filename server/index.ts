@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 // Raw body parser for Stripe webhooks
@@ -63,6 +64,15 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
+  
+  // Set up periodic check for expired subscriptions (every 5 minutes)
+  setInterval(async () => {
+    try {
+      await storage.processExpiredSubscriptions();
+    } catch (error) {
+      console.error("Error processing expired subscriptions:", error);
+    }
+  }, 5 * 60 * 1000); // 5 minutes
   server.listen({
     port,
     host: "0.0.0.0",

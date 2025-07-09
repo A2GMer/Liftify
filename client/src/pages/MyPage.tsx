@@ -70,6 +70,46 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
     }
   };
 
+  const testExpiredSubscriptions = useMutation({
+    mutationFn: async () => {
+      await apiRequest('POST', '/api/test-expired-subscriptions');
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test Completed",
+        description: "Expired subscriptions processed successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Test Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const setSubscriptionExpired = useMutation({
+    mutationFn: async () => {
+      await apiRequest('POST', '/api/test-set-subscription-expired');
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test Setup Complete",
+        description: "Subscription end date set to past for testing",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Test Setup Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -319,6 +359,49 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
           </CardContent>
         </Card>
       </section>
+
+      {/* Testing Section (only show if user has Pro plan scheduled for cancellation) */}
+      {user?.subscriptionCancelAtPeriodEnd && (
+        <section className="p-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-orange-600">🧪 Testing Tools</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-gray-600 mb-4">
+                <p>These tools are for testing the 1-month cancellation system:</p>
+              </div>
+              
+              <div className="flex flex-col space-y-2">
+                <Button
+                  onClick={() => setSubscriptionExpired.mutate()}
+                  variant="outline"
+                  size="sm"
+                  className="text-orange-600 border-orange-200"
+                  disabled={setSubscriptionExpired.isPending}
+                >
+                  {setSubscriptionExpired.isPending ? "Setting..." : "🕐 Set Subscription to Expired (Test)"}
+                </Button>
+                
+                <Button
+                  onClick={() => testExpiredSubscriptions.mutate()}
+                  variant="outline"
+                  size="sm"
+                  className="text-purple-600 border-purple-200"
+                  disabled={testExpiredSubscriptions.isPending}
+                >
+                  {testExpiredSubscriptions.isPending ? "Processing..." : "⚡ Process Expired Subscriptions (Test)"}
+                </Button>
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                <p>Step 1: Click "Set Subscription to Expired" to simulate 1 month passing</p>
+                <p>Step 2: Click "Process Expired Subscriptions" to trigger the automatic cancellation</p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+      )}
     </div>
   );
 }

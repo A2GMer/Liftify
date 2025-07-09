@@ -11,7 +11,7 @@ import {
   type WorkoutWithSets,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc, sql, and, lte } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -21,6 +21,7 @@ export interface IStorage {
   updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan?: string): Promise<User>;
   cancelUserSubscription(userId: string): Promise<User>;
   scheduleSubscriptionCancellation(userId: string): Promise<User>;
+  processExpiredSubscriptions(): Promise<void>;
   
   // Workout operations
   createWorkout(workout: InsertWorkout): Promise<Workout>;
@@ -120,6 +121,36 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  async processExpiredSubscriptions(): Promise<void> {
+    const now = new Date();
+    
+    // Find all users with expired subscriptions that are scheduled for cancellation
+    const expiredUsers = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.subscriptionCancelAtPeriodEnd, true),
+          sql`${users.subscriptionPeriodEnd} <= ${now}`
+        )
+      );
+    
+    console.log(`Found ${expiredUsers.length} expired subscriptions to process`);
+    
+    for (const user of expiredUsers) {
+      try {
+        console.log(`Processing expired subscription for user: ${user.id}`);
+        
+        // Cancel the subscription in database
+        await this.cancelUserSubscription(user.id);
+        
+        console.log(`Successfully cancelled subscription for user: ${user.id}`);
+      } catch (error) {
+        console.error(`Error cancelling subscription for user ${user.id}:`, error);
+      }
+    }
   }
 
   // Workout operations

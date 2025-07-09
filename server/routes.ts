@@ -546,6 +546,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
+  // Test endpoint to manually trigger expired subscription processing
+  app.post('/api/test-expired-subscriptions', isAuthenticated, async (req: any, res) => {
+    try {
+      await storage.processExpiredSubscriptions();
+      res.json({ message: "Expired subscriptions processed successfully" });
+    } catch (error: any) {
+      console.error("Error processing expired subscriptions:", error);
+      res.status(500).json({ message: "Failed to process expired subscriptions: " + error.message });
+    }
+  });
+
+  // Test endpoint to set subscription end date to past (for testing)
+  app.post('/api/test-set-subscription-expired', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day ago
+      
+      await db.update(users).set({
+        subscriptionPeriodEnd: pastDate,
+        updatedAt: new Date()
+      }).where(eq(users.id, userId));
+      
+      res.json({ 
+        message: "Subscription end date set to past for testing", 
+        endDate: pastDate 
+      });
+    } catch (error: any) {
+      console.error("Error setting subscription expired:", error);
+      res.status(500).json({ message: "Failed to set subscription expired: " + error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
