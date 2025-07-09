@@ -662,63 +662,63 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   <Button
                     onClick={() => toggleSetOption(index, 'powerBelt')}
-                    variant={set.powerBelt ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     ベルト
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'buttUp')}
-                    variant={set.buttUp ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.buttUp", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'assistance')}
-                    variant={set.assistance ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral hover:bg-red-500' : 'bg-transparent hover:bg-coral hover:text-white'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.assistance", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'failed')}
-                    variant={set.failed ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'bg-transparent hover:bg-red-600 hover:text-white border-red-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 text-white' : '!bg-white border border-red-300'}`}
                   >
                     つぶれた
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'formFocused')}
-                    variant={set.formFocused ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 hover:bg-blue-700' : 'bg-transparent hover:bg-blue-600 hover:text-white border-blue-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 text-white' : '!bg-white border border-blue-300'}`}
                   >
                     効き重視
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'repFocused')}
-                    variant={set.repFocused ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 hover:bg-green-700' : 'bg-transparent hover:bg-green-600 hover:text-white border-green-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 text-white' : '!bg-white border border-green-300'}`}
                   >
                     回数重視
                   </Button>
                   
                   <Button
                     onClick={() => toggleCheating(index)}
-                    variant={set.cheating ? "default" : "outline"}
+                    variant="ghost"
                     size="sm"
-                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-transparent hover:bg-yellow-600 hover:text-white border-yellow-300'}`}
+                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 text-white' : '!bg-white border border-yellow-300'}`}
                   >
                     チーティング
                   </Button>
