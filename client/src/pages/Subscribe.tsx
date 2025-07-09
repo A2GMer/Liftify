@@ -65,6 +65,18 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
         // Check if the error is about payment already being succeeded
         if (error.code === 'payment_intent_unexpected_state' && error.payment_intent?.status === 'succeeded') {
           console.log('Payment already succeeded, redirecting...');
+          
+          // Update user plan after successful payment
+          try {
+            await apiRequest("POST", "/api/update-plan-after-payment", {
+              paymentIntentId: error.payment_intent.id,
+              plan: plan
+            });
+            console.log('Plan updated after payment');
+          } catch (updateError) {
+            console.error("Error updating plan after payment:", updateError);
+          }
+          
           toast({
             title: t("subscribe.paymentSuccess", language),
             description: t("subscribe.subscribedSuccess", language),
@@ -85,6 +97,18 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Payment succeeded
         console.log('Payment succeeded:', paymentIntent.id);
+        
+        // Update user plan after successful payment
+        try {
+          await apiRequest("POST", "/api/update-plan-after-payment", {
+            paymentIntentId: paymentIntent.id,
+            plan: plan
+          });
+          console.log('Plan updated after payment');
+        } catch (updateError) {
+          console.error("Error updating plan after payment:", updateError);
+        }
+        
         toast({
           title: t("subscribe.paymentSuccess", language),
           description: t("subscribe.subscribedSuccess", language),

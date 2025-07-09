@@ -308,6 +308,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update plan after successful payment
+  app.post('/api/update-plan-after-payment', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { paymentIntentId, plan } = req.body;
+      
+      console.log('Updating plan after payment:', { userId, paymentIntentId, plan });
+      
+      // Update user plan to paid plan with active status
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          subscriptionPlan: plan,
+          subscriptionStatus: 'active',
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      
+      console.log('User plan updated successfully:', updatedUser);
+      
+      res.json({
+        message: "Plan updated successfully",
+        user: updatedUser
+      });
+    } catch (error: any) {
+      console.error("Error updating plan after payment:", error);
+      res.status(500).json({ message: "Failed to update plan: " + error.message });
+    }
+  });
+
   // Cancel subscription and downgrade to free
   app.post('/api/cancel-subscription', isAuthenticated, async (req: any, res) => {
     try {
