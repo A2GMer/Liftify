@@ -62,4 +62,5 @@ export function logStripeEnvironment(): void {
   console.log(`[Stripe] Secret Key: ${config.secretKey.substring(0, 12)}...`);
   console.log(`[Stripe] Pro Product ID: ${config.proProductId}`);
   console.log(`[Stripe] Ultimate Product ID: ${config.ultimateProductId}`);
+  console.log(`[Stripe] Note: Environment variables are managed through Replit Secrets`);
 }
