@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { TopNav } from "@/components/TopNav";
+import { UserMenu } from "@/components/UserMenu";
 import { WorkoutChart } from "@/components/WorkoutChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, LogOut } from "lucide-react";
+import { Plus } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -16,11 +17,13 @@ import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 interface HomeProps {
   onNewWorkout: () => void;
   onEditWorkout: (workoutId: number) => void;
+  onMyPage: () => void;
+  onPlanChange: () => void;
   language: Language;
   onLanguageChange: (language: Language) => void;
 }
 
-export default function Home({ onNewWorkout, onEditWorkout, language, onLanguageChange }: HomeProps) {
+export default function Home({ onNewWorkout, onEditWorkout, onMyPage, onPlanChange, language, onLanguageChange }: HomeProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -50,9 +53,7 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
     retry: false,
   });
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
-  };
+
 
   if (authLoading) {
     return (
@@ -71,8 +72,8 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed top-4 right-4 z-50">
-        <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} showSignOut={true} />
+      <div className="fixed top-4 left-4 z-50">
+        <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} />
       </div>
       
       {/* Header */}
@@ -82,14 +83,11 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
             <img src={logoWhitePath} alt="Liftify" className="h-12 w-auto" />
           </div>
           <div className="flex items-center space-x-4">
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              size="sm"
-              className="text-coral hover:text-red-500 hover:bg-gray-800"
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
+            <UserMenu 
+              language={language} 
+              onMyPage={onMyPage} 
+              onPlanChange={onPlanChange} 
+            />
           </div>
         </div>
       </header>

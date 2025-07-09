@@ -9,13 +9,14 @@ import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import RecordWorkout from "@/pages/RecordWorkout";
 import Subscribe from "@/pages/Subscribe";
+import MyPage from "@/pages/MyPage";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const { language, changeLanguage } = useLanguage();
-  const [currentView, setCurrentView] = useState<'landing' | 'home' | 'record'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'home' | 'record' | 'mypage'>('landing');
   const [editingWorkoutId, setEditingWorkoutId] = useState<number | null>(null);
 
   const handleGetStarted = () => {
@@ -41,6 +42,15 @@ function Router() {
     setCurrentView('landing');
   };
 
+  const handleMyPage = () => {
+    setCurrentView('mypage');
+  };
+
+  const handlePlanChange = () => {
+    setCurrentView('home'); // Navigate to home first, then to subscribe
+    window.location.href = "/subscribe";
+  };
+
   return (
     <Switch>
       <Route path="/subscribe">
@@ -56,11 +66,14 @@ function Router() {
             {currentView === 'record' && (
               <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} editingWorkoutId={editingWorkoutId} />
             )}
+            {currentView === 'mypage' && (
+              <MyPage onBack={handleBackToHome} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
+            )}
             {currentView === 'home' && (
-              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
             )}
             {currentView === 'landing' && (
-              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
             )}
           </>
         )}

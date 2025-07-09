@@ -44,6 +44,22 @@ export const translations = {
     "error.generic": "Something went wrong. Please try again.",
     "success.workoutSaved": "Workout saved successfully!",
     "auth.signOut": "Sign Out",
+    
+    // User Menu
+    "userMenu.myPage": "My Page",
+    "userMenu.planChange": "Plan Change",
+    
+    // My Page
+    "myPage.currentPlan": "Current Plan",
+    "myPage.accountInfo": "Account Information",
+    "myPage.subscriptionPlan": "Subscription Plan",
+    "myPage.memberSince": "Member Since",
+    "myPage.workoutStats": "Workout Statistics",
+    "myPage.totalWorkouts": "Total Workouts",
+    "myPage.totalVolume": "Total Volume",
+    
+    // Common
+    "common.back": "Back",
   },
   ja: {
     "hero.title": "Liftify",
@@ -90,6 +106,22 @@ export const translations = {
     "error.generic": "エラーが発生しました。もう一度お試しください。",
     "success.workoutSaved": "ワークアウトが正常に保存されました！",
     "auth.signOut": "サインアウト",
+    
+    // User Menu
+    "userMenu.myPage": "マイページ",
+    "userMenu.planChange": "プラン変更",
+    
+    // My Page
+    "myPage.currentPlan": "現在のプラン",
+    "myPage.accountInfo": "アカウント情報",
+    "myPage.subscriptionPlan": "サブスクリプションプラン",
+    "myPage.memberSince": "登録日",
+    "myPage.workoutStats": "ワークアウト統計",
+    "myPage.totalWorkouts": "総ワークアウト数",
+    "myPage.totalVolume": "総ボリューム",
+    
+    // Common
+    "common.back": "戻る",
   },
   fr: {
     "hero.title": "Liftify",
@@ -136,6 +168,22 @@ export const translations = {
     "error.generic": "Une erreur s'est produite. Veuillez réessayer.",
     "success.workoutSaved": "Entraînement sauvegardé avec succès !",
     "auth.signOut": "Se déconnecter",
+    
+    // User Menu
+    "userMenu.myPage": "Mon Profil",
+    "userMenu.planChange": "Changer de Plan",
+    
+    // My Page
+    "myPage.currentPlan": "Plan Actuel",
+    "myPage.accountInfo": "Informations du Compte",
+    "myPage.subscriptionPlan": "Plan d'Abonnement",
+    "myPage.memberSince": "Membre Depuis",
+    "myPage.workoutStats": "Statistiques d'Entraînement",
+    "myPage.totalWorkouts": "Total des Entraînements",
+    "myPage.totalVolume": "Volume Total",
+    
+    // Common
+    "common.back": "Retour",
   },
   de: {
     "hero.title": "Liftify",
@@ -182,6 +230,22 @@ export const translations = {
     "error.generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "success.workoutSaved": "Training erfolgreich gespeichert!",
     "auth.signOut": "Abmelden",
+    
+    // User Menu
+    "userMenu.myPage": "Mein Profil",
+    "userMenu.planChange": "Plan Ändern",
+    
+    // My Page
+    "myPage.currentPlan": "Aktueller Plan",
+    "myPage.accountInfo": "Kontoinformationen",
+    "myPage.subscriptionPlan": "Abonnement-Plan",
+    "myPage.memberSince": "Mitglied Seit",
+    "myPage.workoutStats": "Trainingsstatistiken",
+    "myPage.totalWorkouts": "Gesamte Trainings",
+    "myPage.totalVolume": "Gesamtvolumen",
+    
+    // Common
+    "common.back": "Zurück",
   },
 };
 
