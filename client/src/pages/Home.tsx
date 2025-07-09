@@ -11,7 +11,7 @@ import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { WorkoutWithSets } from "@shared/schema";
-import logoPath from "@assets/logo-trans_1752044551302.png";
+import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface HomeProps {
   onNewWorkout: () => void;
@@ -77,7 +77,7 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
       <header className="bg-black text-white p-4 sticky top-0 z-40">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <img src={logoPath} alt="Liftify" className="h-6 w-auto" />
+            <img src={logoWhitePath} alt="Liftify" className="h-6 w-auto" />
             <h1 className="text-xl font-bold">Liftify</h1>
           </div>
           <div className="flex items-center space-x-4">

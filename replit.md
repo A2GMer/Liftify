@@ -116,6 +116,8 @@ Changelog:
 - July 09, 2025. Redesigned landing page inspired by Endel's structure with three key strengths and chest training evidence
 - July 09, 2025. Added hero section background video for enhanced visual appeal
 - July 09, 2025. Implemented favicon system with multiple sizes and PWA manifest support
+- July 09, 2025. Added white logo version for black backgrounds across all app pages
+- July 09, 2025. Implemented automatic language detection from browser settings and timezone
 ```
 
 ## User Preferences

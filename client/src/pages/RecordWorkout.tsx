@@ -14,7 +14,7 @@ import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
-import logoPath from "@assets/logo-trans_1752044551302.png";
+import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface SetData {
   setNumber: number;
@@ -434,7 +434,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex items-center space-x-2">
-            <img src={logoPath} alt="Liftify" className="h-5 w-auto" />
+            <img src={logoWhitePath} alt="Liftify" className="h-5 w-auto" />
             <h1 className="text-xl font-bold">
               {t("record.title", language)}
             </h1>

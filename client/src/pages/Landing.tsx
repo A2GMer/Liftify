@@ -5,6 +5,7 @@ import { Smartphone, TrendingUp, Activity, Heart, Zap, Shield } from "lucide-rea
 import { t, type Language } from "@/lib/i18n";
 import chestVideoPath from "@assets/chest_1752043528152.mp4";
 import logoPath from "@assets/logo-trans_1752044551302.png";
+import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface LandingProps {
   onGetStarted: () => void;
@@ -18,7 +19,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
     <div className="min-h-screen bg-white">
       <nav className="absolute top-0 left-0 right-0 z-50 p-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <img src={logoPath} alt="Liftify" className="h-8 w-auto" />
+          <img src={logoWhitePath} alt="Liftify" className="h-8 w-auto" />
           <span className="text-white font-bold text-xl drop-shadow-lg">Liftify</span>
         </div>
         <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
