@@ -165,6 +165,28 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
     }));
   };
 
+  const updateCheatingWeight = (index: number, increment: boolean) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        const currentWeight = set.cheatingWeight || 0;
+        const newWeight = increment ? currentWeight + 5 : Math.max(0, currentWeight - 5);
+        return { ...set, cheatingWeight: newWeight };
+      }
+      return set;
+    }));
+  };
+
+  const updateCheatingReps = (index: number, increment: boolean) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        const currentReps = set.cheatingReps || 0;
+        const newReps = increment ? currentReps + 1 : Math.max(0, currentReps - 1);
+        return { ...set, cheatingReps: newReps };
+      }
+      return set;
+    }));
+  };
+
   const saveWorkoutMutation = useMutation({
     mutationFn: async (data: any) => {
       await apiRequest('POST', '/api/workouts', data);
@@ -473,7 +495,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
                   >
-                    {t("record.sets.powerBelt", language)}
+                    ベルト
                   </Button>
                   
                   <Button
@@ -513,6 +535,78 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                   </Button>
                 </div>
 
+                {/* Cheating Weight/Reps Input */}
+                {set.cheating && (
+                  <div className="border-t pt-4 mb-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="text-sm font-medium text-yellow-800 mb-3">
+                        チーティング時の実際の重量・回数
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Cheating Weight Control */}
+                        <div>
+                          <Label className="text-sm text-yellow-700 mb-2 block">
+                            実際の重量 (kg)
+                          </Label>
+                          <div className="flex items-center justify-center bg-white rounded-lg p-2">
+                            <Button
+                              onClick={() => updateCheatingWeight(index, false)}
+                              size="sm"
+                              variant="outline"
+                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                            <div className="mx-3 min-w-[50px] text-center">
+                              <span className="text-lg font-bold text-yellow-800">
+                                {set.cheatingWeight || 0}
+                              </span>
+                            </div>
+                            <Button
+                              onClick={() => updateCheatingWeight(index, true)}
+                              size="sm"
+                              variant="outline"
+                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Cheating Reps Control */}
+                        <div>
+                          <Label className="text-sm text-yellow-700 mb-2 block">
+                            実際の回数
+                          </Label>
+                          <div className="flex items-center justify-center bg-white rounded-lg p-2">
+                            <Button
+                              onClick={() => updateCheatingReps(index, false)}
+                              size="sm"
+                              variant="outline"
+                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                            <div className="mx-3 min-w-[50px] text-center">
+                              <span className="text-lg font-bold text-yellow-800">
+                                {set.cheatingReps || 0}
+                              </span>
+                            </div>
+                            <Button
+                              onClick={() => updateCheatingReps(index, true)}
+                              size="sm"
+                              variant="outline"
+                              className="h-10 w-10 rounded-full border-2 border-yellow-300 hover:border-yellow-500 hover:bg-yellow-500 hover:text-white active:scale-95 transition-transform"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Notes Toggle */}
                 <div className="border-t pt-3">
                   <Button
@@ -528,16 +622,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                   
                   {set.showNotes && (
                     <div className="mt-2 animate-in slide-in-from-top-2 duration-200">
-                      {set.cheating && set.cheatingWeight && set.cheatingReps && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
-                          <div className="text-sm font-medium text-yellow-800 mb-1">
-                            チーティング詳細:
-                          </div>
-                          <div className="text-sm text-yellow-700">
-                            実際の重量: {set.cheatingWeight}kg / 実際の回数: {set.cheatingReps}回
-                          </div>
-                        </div>
-                      )}
                       <Textarea
                         rows={2}
                         value={set.notes}

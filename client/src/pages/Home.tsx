@@ -93,7 +93,7 @@ export default function Home({ onNewWorkout, language, onLanguageChange }: HomeP
 
       {/* Stats Overview */}
       <section className="p-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
               {statsLoading ? (
@@ -135,6 +135,21 @@ export default function Home({ onNewWorkout, language, onLanguageChange }: HomeP
               )}
               <div className="text-sm text-gray-600">
                 {t("home.stats.monthlyGain", language)}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4 text-center">
+              {statsLoading ? (
+                <Skeleton className="h-8 w-16 mx-auto mb-2" />
+              ) : (
+                <div className="text-2xl font-bold text-coral">
+                  {userStats?.estimated1RM || 0}kg
+                </div>
+              )}
+              <div className="text-sm text-gray-600">
+                想定1RM
               </div>
             </CardContent>
           </Card>

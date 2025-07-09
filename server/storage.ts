@@ -145,6 +145,7 @@ export class DatabaseStorage implements IStorage {
     thisWeekWorkouts: number;
     monthlyGain: number;
     totalVolume: number;
+    estimated1RM: number;
   }> {
     // Get current max weight
     const [maxWeight] = await db
@@ -168,11 +169,42 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(workouts, eq(sets.workoutId, workouts.id))
       .where(eq(workouts.userId, userId));
 
+    // Get all non-failed sets for 1RM calculation
+    const allSets = await db
+      .select({
+        weight: sets.weight,
+        reps: sets.reps,
+        failed: sets.failed,
+      })
+      .from(sets)
+      .innerJoin(workouts, eq(sets.workoutId, workouts.id))
+      .where(eq(workouts.userId, userId));
+
+    // Calculate 1RM using the table
+    let highest1RM = 0;
+    allSets.forEach(set => {
+      // Skip failed sets
+      if (set.failed) return;
+
+      const weight = parseFloat(set.weight);
+      const reps = set.reps;
+
+      // For 1 rep, the weight is the 1RM
+      if (reps === 1) {
+        highest1RM = Math.max(highest1RM, weight);
+      } else if (reps >= 2 && reps <= 12) {
+        // Use simplified calculation for 1RM: weight * (1 + (reps / 30))
+        const estimated1RM = weight * (1 + (reps / 30));
+        highest1RM = Math.max(highest1RM, estimated1RM);
+      }
+    });
+
     return {
       currentMax: maxWeight?.max || 0,
       thisWeekWorkouts: thisWeekCount?.count || 0,
       monthlyGain: 5, // Placeholder calculation
       totalVolume: totalVol?.total || 0,
+      estimated1RM: Math.round(highest1RM),
     };
   }
 }
