@@ -98,19 +98,27 @@ export default function Subscribe() {
   }, [isAuthenticated, authLoading, toast]);
   
   useEffect(() => {
-    if (!isAuthenticated || authLoading) return;
+    if (!isAuthenticated || authLoading || !user) return;
     
     const urlParams = new URLSearchParams(window.location.search);
     const planParam = urlParams.get('plan') || 'pro';
     setPlan(planParam);
     
     // Set user's current plan
-    if (user?.subscriptionPlan) {
-      setUserPlan(user.subscriptionPlan);
+    setUserPlan(user.subscriptionPlan || 'free');
+    
+    // If user is trying to subscribe to a plan they already have, show error
+    if (user.subscriptionPlan === planParam && user.subscriptionStatus === 'active') {
+      toast({
+        title: t("subscribe.alreadySubscribed", language),
+        description: t("subscribe.alreadySubscribedDesc", language),
+        variant: "destructive",
+      });
+      return;
     }
     
-    // Only create subscription if user doesn't already have this plan
-    if (user?.subscriptionPlan !== planParam || user?.subscriptionStatus !== 'active') {
+    // Only create subscription for pro plan (ultimate is disabled)
+    if (planParam === 'pro' && user.subscriptionPlan !== 'pro') {
       apiRequest("POST", "/api/create-subscription", { plan: planParam })
         .then((res) => res.json())
         .then((data) => {
@@ -129,19 +137,15 @@ export default function Subscribe() {
             return;
           }
           
-          if (error.message.includes('already has')) {
-            toast({
-              title: t("subscribe.alreadySubscribed", language),
-              description: t("subscribe.alreadySubscribedDesc", language),
-              variant: "destructive",
-            });
-            return;
-          }
-          
           console.error('Error creating subscription:', error);
+          toast({
+            title: "Error",
+            description: "Failed to create subscription. Please try again.",
+            variant: "destructive",
+          });
         });
     }
-  }, [isAuthenticated, authLoading, toast, user]);
+  }, [isAuthenticated, authLoading, user, language, toast]);
 
   const getPlanInfo = () => {
     if (plan === 'pro') {
@@ -188,7 +192,8 @@ export default function Subscribe() {
     return null; // Will redirect
   }
 
-  if (!clientSecret) {
+  // Don't show loading if we're not creating a subscription
+  if (plan === 'pro' && userPlan !== 'pro' && !clientSecret) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
