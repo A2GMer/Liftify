@@ -308,13 +308,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update plan after successful payment
-  app.post('/api/update-plan-after-payment', isAuthenticated, async (req: any, res) => {
+  // Update plan after successful payment (no auth required for immediate post-payment update)
+  app.post('/api/update-plan-after-payment', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const { paymentIntentId, plan } = req.body;
+      const { paymentIntentId, plan, userId } = req.body;
       
       console.log('Updating plan after payment:', { userId, paymentIntentId, plan });
+      
+      // Get user ID from payment intent if not provided
+      let actualUserId = userId;
+      if (!actualUserId && paymentIntentId) {
+        // Find user by payment intent through subscription
+        const subscriptions = await stripe.subscriptions.list({ limit: 100 });
+        for (const subscription of subscriptions.data) {
+          const invoice = subscription.latest_invoice as Stripe.Invoice;
+          if (invoice.payment_intent === paymentIntentId) {
+            const customerId = subscription.customer as string;
+            const user = await storage.getUserByStripeCustomerId(customerId);
+            if (user) {
+              actualUserId = user.id;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!actualUserId) {
+        return res.status(400).json({ message: "User not found for payment intent" });
+      }
       
       // Update user plan to paid plan with active status
       const [updatedUser] = await db
@@ -324,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           subscriptionStatus: 'active',
           updatedAt: new Date(),
         })
-        .where(eq(users.id, userId))
+        .where(eq(users.id, actualUserId))
         .returning();
       
       console.log('User plan updated successfully:', updatedUser);

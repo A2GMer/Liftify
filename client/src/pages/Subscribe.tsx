@@ -18,7 +18,7 @@ if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-const CheckoutForm = ({ plan }: { plan: string }) => {
+const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -70,7 +70,8 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
           try {
             await apiRequest("POST", "/api/update-plan-after-payment", {
               paymentIntentId: error.payment_intent.id,
-              plan: plan
+              plan: plan,
+              userId: user?.id
             });
             console.log('Plan updated after payment');
           } catch (updateError) {
@@ -102,7 +103,8 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
         try {
           await apiRequest("POST", "/api/update-plan-after-payment", {
             paymentIntentId: paymentIntent.id,
-            plan: plan
+            plan: plan,
+            userId: user?.id
           });
           console.log('Plan updated after payment');
         } catch (updateError) {
@@ -530,7 +532,7 @@ export default function Subscribe() {
                 </div>
                 
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
-                  <CheckoutForm plan={plan} />
+                  <CheckoutForm plan={plan} user={user} />
                 </Elements>
               </div>
             </CardContent>
