@@ -79,12 +79,9 @@ export default function Home({ onNewWorkout, onEditWorkout, language, onLanguage
       <header className="bg-black text-white p-4 sticky top-0 z-40">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <img src={logoWhitePath} alt="Liftify" className="h-10 w-auto" />
+            <img src={logoWhitePath} alt="Liftify" className="h-12 w-auto" />
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm">
-              {t("home.welcome", language)}
-            </span>
             <Button
               onClick={handleLogout}
               variant="ghost"
