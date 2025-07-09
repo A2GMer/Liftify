@@ -4,10 +4,18 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertWorkoutSchema, insertSetSchema } from "@shared/schema";
 import { z } from "zod";
+import Stripe from "stripe";
 
 const createWorkoutWithSetsSchema = z.object({
   workout: insertWorkoutSchema.omit({ userId: true }),
   sets: z.array(insertSetSchema.omit({ workoutId: true })),
+});
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2024-12-18.acacia",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -184,6 +192,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching 1RM history:", error);
       res.status(500).json({ message: "Failed to fetch 1RM history" });
+    }
+  });
+
+  // Stripe subscription routes
+  app.post('/api/create-subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { plan } = req.body;
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // If user already has a subscription, retrieve it
+      if (user.stripeSubscriptionId) {
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string);
+        const paymentIntent = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
+        
+        return res.json({
+          subscriptionId: subscription.id,
+          clientSecret: paymentIntent.client_secret,
+        });
+      }
+
+      // Create new customer if needed
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email || '',
+          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email || '',
+        });
+        customerId = customer.id;
+      }
+
+      // Create price for the plan
+      const priceAmount = plan === 'pro' ? 500 : 980; // ¥500 or ¥980
+      
+      const price = await stripe.prices.create({
+        currency: 'jpy',
+        unit_amount: priceAmount,
+        recurring: {
+          interval: 'month',
+        },
+        product_data: {
+          name: `Liftify ${plan === 'pro' ? 'Pro' : 'Ultimate'} Plan`,
+        },
+      });
+
+      // Create subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{
+          price: price.id,
+        }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+        },
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Update user with Stripe info
+      await storage.updateUserStripeInfo(userId, customerId, subscription.id);
+
+      const invoice = subscription.latest_invoice as Stripe.Invoice;
+      const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+      
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret: paymentIntent.client_secret,
+      });
+    } catch (error: any) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ message: "Failed to create subscription: " + error.message });
     }
   });
 

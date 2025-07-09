@@ -247,6 +247,200 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+              {language === 'ja' ? '料金プラン' : 'Pricing Plans'}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              {language === 'ja'
+                ? 'あなたのトレーニングレベルに合わせたプランをお選びください'
+                : 'Choose the plan that fits your training level'
+              }
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <Card className="relative border-2 border-gray-200 hover:border-gray-300 transition-colors">
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {language === 'ja' ? 'Free' : 'Free'}
+                  </h3>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">¥0</div>
+                  <p className="text-gray-600">
+                    {language === 'ja' ? '永久無料' : 'Forever free'}
+                  </p>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '基本的な記録機能' : 'Basic recording features'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '最新30日間のデータ' : 'Last 30 days of data'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '基本統計表示' : 'Basic statistics'}
+                    </span>
+                  </li>
+                </ul>
+                
+                <Button 
+                  onClick={onGetStarted}
+                  className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3"
+                >
+                  {language === 'ja' ? '無料で始める' : 'Start Free'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="relative border-2 border-blue-500 hover:border-blue-600 transition-colors">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  {language === 'ja' ? '人気' : 'Popular'}
+                </span>
+              </div>
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">¥500</div>
+                  <p className="text-gray-600">
+                    {language === 'ja' ? '月額' : 'per month'}
+                  </p>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '無制限データ保存' : 'Unlimited data storage'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '高度な分析グラフ' : 'Advanced analytics charts'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'タグ付け機能' : 'Tagging features'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'ダークモード' : 'Dark mode'}
+                    </span>
+                  </li>
+                </ul>
+                
+                <Button 
+                  onClick={() => window.open('/subscribe?plan=pro', '_blank')}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3"
+                >
+                  {language === 'ja' ? 'Proプランを選択' : 'Choose Pro'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Ultimate Plan */}
+            <Card className="relative border-2 border-gray-300 opacity-75">
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Ultimate</h3>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">¥980</div>
+                  <p className="text-gray-600">
+                    {language === 'ja' ? '月額' : 'per month'}
+                  </p>
+                  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-3 py-1 rounded-full mt-2">
+                    {language === 'ja' ? 'Coming Soon' : 'Coming Soon'}
+                  </span>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'Proプランの全機能' : 'All Pro features'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'AIによる分析' : 'AI-powered analysis'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'メニュー提案' : 'Workout suggestions'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? '休憩時間提案' : 'Rest time suggestions'}
+                    </span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                    <span className="text-gray-700">
+                      {language === 'ja' ? 'データエクスポート' : 'Data export'}
+                    </span>
+                  </li>
+                </ul>
+                
+                <Button 
+                  disabled
+                  className="w-full bg-gray-400 text-white py-3 cursor-not-allowed"
+                >
+                  {language === 'ja' ? 'Coming Soon' : 'Coming Soon'}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-20 bg-black text-white">
         <div className="container mx-auto px-4 text-center">

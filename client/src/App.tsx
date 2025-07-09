@@ -8,6 +8,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import RecordWorkout from "@/pages/RecordWorkout";
+import Subscribe from "@/pages/Subscribe";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -40,20 +41,33 @@ function Router() {
     setCurrentView('landing');
   };
 
-  // Show landing page if not authenticated or loading
-  if (isLoading || !isAuthenticated) {
-    return <Landing onGetStarted={handleGetStarted} language={language} onLanguageChange={changeLanguage} />;
-  }
-
-  // Show authenticated views
-  switch (currentView) {
-    case 'record':
-      return <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} editingWorkoutId={editingWorkoutId} />;
-    case 'home':
-      return <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />;
-    default:
-      return <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />;
-  }
+  return (
+    <Switch>
+      <Route path="/subscribe">
+        <Subscribe />
+      </Route>
+      <Route path="/">
+        {/* Show landing page if not authenticated or loading */}
+        {isLoading || !isAuthenticated ? (
+          <Landing onGetStarted={handleGetStarted} language={language} onLanguageChange={changeLanguage} />
+        ) : (
+          /* Show authenticated views */
+          <>
+            {currentView === 'record' && (
+              <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} editingWorkoutId={editingWorkoutId} />
+            )}
+            {currentView === 'home' && (
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />
+            )}
+            {currentView === 'landing' && (
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} language={language} onLanguageChange={changeLanguage} />
+            )}
+          </>
+        )}
+      </Route>
+      <Route component={NotFound} />
+    </Switch>
+  );
 }
 
 function App() {
