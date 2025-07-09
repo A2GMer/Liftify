@@ -20,15 +20,18 @@ export interface IStorage {
   
   // Workout operations
   createWorkout(workout: InsertWorkout): Promise<Workout>;
+  updateWorkout(id: number, workout: InsertWorkout): Promise<Workout>;
   getWorkoutsByUserId(userId: string): Promise<WorkoutWithSets[]>;
   getWorkoutById(id: number): Promise<WorkoutWithSets | undefined>;
   
   // Set operations
   createSet(set: InsertSet): Promise<Set>;
   getSetsByWorkoutId(workoutId: number): Promise<Set[]>;
+  deleteSetsByWorkoutId(workoutId: number): Promise<void>;
   
   // Analytics
   getDailyVolumeStats(userId: string, days: number): Promise<{ date: string; volume: number }[]>;
+  get1RMHistory(userId: string, days: number): Promise<{ date: string; max1rm: number }[]>;
   getUserStats(userId: string): Promise<{
     currentMax: number;
     thisWeekWorkouts: number;
@@ -66,6 +69,15 @@ export class DatabaseStorage implements IStorage {
       .values(workout)
       .returning();
     return newWorkout;
+  }
+
+  async updateWorkout(id: number, workout: InsertWorkout): Promise<Workout> {
+    const [updatedWorkout] = await db
+      .update(workouts)
+      .set({ ...workout, updatedAt: new Date() })
+      .where(eq(workouts.id, id))
+      .returning();
+    return updatedWorkout;
   }
 
   async getWorkoutsByUserId(userId: string): Promise<WorkoutWithSets[]> {
@@ -120,6 +132,10 @@ export class DatabaseStorage implements IStorage {
       .orderBy(sets.setNumber);
   }
 
+  async deleteSetsByWorkoutId(workoutId: number): Promise<void> {
+    await db.delete(sets).where(eq(sets.workoutId, workoutId));
+  }
+
   // Analytics
   async getDailyVolumeStats(userId: string, days: number): Promise<{ date: string; volume: number }[]> {
     const result = await db
@@ -138,6 +154,66 @@ export class DatabaseStorage implements IStorage {
       date: row.date,
       volume: row.volume || 0,
     }));
+  }
+
+  async get1RMHistory(userId: string, days: number): Promise<{ date: string; max1rm: number }[]> {
+    const result = await db
+      .select({
+        date: workouts.date,
+        weight: sets.weight,
+        reps: sets.reps,
+      })
+      .from(workouts)
+      .innerJoin(sets, eq(workouts.id, sets.workoutId))
+      .where(
+        and(
+          eq(workouts.userId, userId),
+          eq(sets.failed, false) // Only include non-failed sets
+        )
+      )
+      .orderBy(desc(workouts.date))
+      .limit(days * 10); // Get more sets to process
+
+    // Calculate 1RM for each set and group by date
+    const groupedByDate = result.reduce((acc: { [key: string]: number[] }, row) => {
+      const date = row.date;
+      const weight = parseFloat(row.weight);
+      const reps = row.reps;
+      
+      // Calculate 1RM using the oneRMCalculator
+      const oneRM = this.calculate1RM(weight, reps);
+      
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      if (oneRM) {
+        acc[date].push(oneRM);
+      }
+      
+      return acc;
+    }, {});
+    
+    // Get max 1RM for each date
+    const history = Object.entries(groupedByDate).map(([date, oneRMs]) => ({
+      date,
+      max1rm: Math.max(...oneRMs)
+    }));
+    
+    return history.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  // Helper method to calculate 1RM
+  private calculate1RM(weight: number, reps: number): number | null {
+    // 1RM conversion table
+    const conversionTable: { [key: number]: number } = {
+      1: 1.00, 2: 0.95, 3: 0.93, 4: 0.90, 5: 0.87, 6: 0.85, 7: 0.83, 8: 0.80, 9: 0.77, 10: 0.75,
+      11: 0.73, 12: 0.70, 13: 0.67, 14: 0.65, 15: 0.63, 16: 0.60, 17: 0.57, 18: 0.55, 19: 0.52, 20: 0.50
+    };
+    
+    if (reps < 1 || reps > 20) return null;
+    
+    const percentage = conversionTable[reps];
+    return Math.round(weight / percentage);
   }
 
   async getUserStats(userId: string): Promise<{

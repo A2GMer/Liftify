@@ -87,6 +87,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update workout
+  app.put('/api/workouts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const workoutId = parseInt(req.params.id);
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+
+      console.log("Updating workout data:", JSON.stringify(req.body, null, 2));
+      
+      const { workout: workoutData, sets: setsData } = req.body;
+      
+      // Update workout
+      const workout = await storage.updateWorkout(workoutId, {
+        ...workoutData,
+        userId,
+      });
+
+      // Delete existing sets and create new ones
+      await storage.deleteSetsByWorkoutId(workoutId);
+      
+      const sets = [];
+      for (const setData of setsData) {
+        console.log("Processing set data:", setData);
+        const set = await storage.createSet({
+          ...setData,
+          workoutId: workoutId,
+        });
+        sets.push(set);
+      }
+
+      res.json({ ...workout, sets });
+    } catch (error) {
+      console.error("Error updating workout:", error);
+      res.status(500).json({ message: "Failed to update workout" });
+    }
+  });
+
   // Analytics routes
   app.get('/api/analytics/daily-volume', isAuthenticated, async (req: any, res) => {
     try {
@@ -108,6 +148,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
+  // 1RM tracking endpoint
+  app.get('/api/analytics/1rm-history', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const days = parseInt(req.query.days as string) || 30;
+      const data = await storage.get1RMHistory(userId, days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching 1RM history:", error);
+      res.status(500).json({ message: "Failed to fetch 1RM history" });
     }
   });
 

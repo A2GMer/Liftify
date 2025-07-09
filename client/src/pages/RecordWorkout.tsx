@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
   const [workoutDate, setWorkoutDate] = useState('');
   const [workoutTime, setWorkoutTime] = useState('');
   const [workoutNotes, setWorkoutNotes] = useState('');
-  const [overallRating, setOverallRating] = useState([5]);
   const [allOutFeeling, setAllOutFeeling] = useState([5]);
   const [sets, setSets] = useState<SetData[]>([
     {
@@ -88,12 +87,43 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     }
   }, [isAuthenticated, authLoading, toast]);
 
-  // Set current date and time
+  // Load existing workout data when in edit mode
+  const { data: existingWorkout, isLoading: loadingWorkout } = useQuery({
+    queryKey: ['/api/workouts', editingWorkoutId],
+    enabled: !!editingWorkoutId,
+    retry: false,
+  });
+
+  // Set current date and time or load existing workout data
   useEffect(() => {
-    const now = new Date();
-    setWorkoutDate(now.toISOString().split('T')[0]);
-    setWorkoutTime(now.toTimeString().slice(0, 5));
-  }, []);
+    if (editingWorkoutId && existingWorkout) {
+      // Load existing workout data
+      setWorkoutDate(existingWorkout.date);
+      setWorkoutTime(existingWorkout.time);
+      setWorkoutNotes(existingWorkout.notes || '');
+      setAllOutFeeling([existingWorkout.allOutFeeling || 5]);
+      
+      // Load sets data
+      const existingSets = existingWorkout.sets.map((set: any) => ({
+        setNumber: set.setNumber,
+        weight: parseFloat(set.weight),
+        reps: set.reps,
+        powerBelt: set.powerBelt,
+        buttUp: set.buttUp,
+        assistance: set.assistance,
+        failed: set.failed,
+        cheating: false,
+        notes: set.notes || '',
+        showNotes: false,
+      }));
+      setSets(existingSets);
+    } else if (!editingWorkoutId) {
+      // Set current date and time for new workout
+      const now = new Date();
+      setWorkoutDate(now.toISOString().split('T')[0]);
+      setWorkoutTime(now.toTimeString().slice(0, 5));
+    }
+  }, [editingWorkoutId, existingWorkout]);
 
   // Helper functions for tap-based controls
   const updateSetWeight = (index: number, increment: boolean) => {
@@ -193,7 +223,11 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest('POST', '/api/workouts', data);
+      if (editingWorkoutId) {
+        await apiRequest('PUT', `/api/workouts/${editingWorkoutId}`, data);
+      } else {
+        await apiRequest('POST', '/api/workouts', data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workouts'] });
@@ -282,9 +316,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     const workoutData = {
       workout: {
         date: workoutDate,
-        time: workoutTime,
+        time: editingWorkoutId ? existingWorkout?.time : workoutTime, // Don't update time in edit mode
         notes: workoutNotes,
-        overallRating: overallRating[0],
         allOutFeeling: allOutFeeling[0],
       },
       sets: allSets,
@@ -676,25 +709,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
               />
             </div>
             
-            {/* Overall Rating Slider */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                総合評価 ({overallRating[0]}/10)
-              </Label>
-              <Slider
-                value={overallRating}
-                onValueChange={setOverallRating}
-                max={10}
-                min={1}
-                step={1}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>悪い</span>
-                <span>良い</span>
-              </div>
-            </div>
-
             {/* All Out Feeling Slider */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">
