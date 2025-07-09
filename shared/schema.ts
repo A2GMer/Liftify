@@ -58,6 +58,7 @@ export const sets = pgTable("sets", {
   buttUp: boolean("butt_up").default(false),
   assistance: boolean("assistance").default(false),
   failed: boolean("failed").default(false),
+  isCheatingSet: boolean("is_cheating_set").default(false),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });

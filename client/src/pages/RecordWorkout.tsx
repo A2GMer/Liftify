@@ -22,6 +22,9 @@ interface SetData {
   buttUp: boolean;
   assistance: boolean;
   failed: boolean;
+  cheating: boolean;
+  cheatingWeight?: number;
+  cheatingReps?: number;
   notes: string;
   showNotes: boolean;
 }
@@ -49,6 +52,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       buttUp: false,
       assistance: false,
       failed: false,
+      cheating: false,
       notes: '',
       showNotes: false,
     },
@@ -60,6 +64,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       buttUp: false,
       assistance: false,
       failed: false,
+      cheating: false,
       notes: '',
       showNotes: false,
     },
@@ -134,6 +139,32 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
     }));
   };
 
+  const toggleCheating = (index: number) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        if (!set.cheating) {
+          // Enable cheating mode - store current weight/reps as cheating values and show notes
+          return {
+            ...set,
+            cheating: true,
+            cheatingWeight: set.weight,
+            cheatingReps: set.reps,
+            showNotes: true, // Automatically show notes when cheating is enabled
+          };
+        } else {
+          // Disable cheating mode - clear cheating values
+          return {
+            ...set,
+            cheating: false,
+            cheatingWeight: undefined,
+            cheatingReps: undefined,
+          };
+        }
+      }
+      return set;
+    }));
+  };
+
   const saveWorkoutMutation = useMutation({
     mutationFn: async (data: any) => {
       await apiRequest('POST', '/api/workouts', data);
@@ -189,13 +220,12 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       return;
     }
 
-    const workoutData = {
-      workout: {
-        date: workoutDate,
-        time: workoutTime,
-        notes: workoutNotes,
-      },
-      sets: validSets.map(set => ({
+    // Process sets and cheating sets separately
+    const allSets: any[] = [];
+    
+    validSets.forEach(set => {
+      // Add the main set
+      allSets.push({
         setNumber: set.setNumber,
         weight: set.weight,
         reps: set.reps,
@@ -204,7 +234,31 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
         assistance: set.assistance,
         failed: set.failed,
         notes: set.notes,
-      })),
+      });
+      
+      // Add cheating set if it exists
+      if (set.cheating && set.cheatingWeight && set.cheatingReps) {
+        allSets.push({
+          setNumber: set.setNumber,
+          weight: set.cheatingWeight,
+          reps: set.cheatingReps,
+          powerBelt: set.powerBelt,
+          buttUp: set.buttUp,
+          assistance: set.assistance,
+          failed: false, // cheating sets are not failed
+          notes: `チーティング: ${set.notes}`,
+          isCheatingSet: true,
+        });
+      }
+    });
+
+    const workoutData = {
+      workout: {
+        date: workoutDate,
+        time: workoutTime,
+        notes: workoutNotes,
+      },
+      sets: allSets,
     };
 
     saveWorkoutMutation.mutate(workoutData);
@@ -219,6 +273,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       buttUp: false,
       assistance: false,
       failed: false,
+      cheating: false,
       notes: '',
       showNotes: false,
     };
@@ -445,7 +500,16 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-600 hover:text-white border-red-300'}`}
                   >
-                    {t("record.sets.failed", language)}
+                    つぶれた
+                  </Button>
+                  
+                  <Button
+                    onClick={() => toggleCheating(index)}
+                    variant={set.cheating ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 hover:bg-yellow-700' : 'hover:bg-yellow-600 hover:text-white border-yellow-300'}`}
+                  >
+                    チーティング
                   </Button>
                 </div>
 
@@ -464,6 +528,16 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                   
                   {set.showNotes && (
                     <div className="mt-2 animate-in slide-in-from-top-2 duration-200">
+                      {set.cheating && set.cheatingWeight && set.cheatingReps && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                          <div className="text-sm font-medium text-yellow-800 mb-1">
+                            チーティング詳細:
+                          </div>
+                          <div className="text-sm text-yellow-700">
+                            実際の重量: {set.cheatingWeight}kg / 実際の回数: {set.cheatingReps}回
+                          </div>
+                        </div>
+                      )}
                       <Textarea
                         rows={2}
                         value={set.notes}
