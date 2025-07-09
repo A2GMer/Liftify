@@ -122,6 +122,9 @@ Changelog:
 - July 09, 2025. Implemented comprehensive UI minimization with logo size standardization
 - July 09, 2025. Fixed 1RM calculation discrepancy by standardizing both home stats and chart to use same conversion table
 - July 09, 2025. Added "効き重視" (form-focused) and "回数重視" (rep-focused) set options with option persistence
+- July 09, 2025. Implemented complete Stripe subscription system with 3-tier pricing (Free/Pro/Ultimate)
+- July 09, 2025. Added user profile menu in top-right corner with My Page, Plan Change, and Sign Out options
+- July 09, 2025. Integrated Stripe product IDs for Pro (prod_SeC3r09HiUPQRm) and Ultimate (prod_SeC5sRCzptC9dB) plans
 ```
 
 ## User Preferences

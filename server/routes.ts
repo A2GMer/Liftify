@@ -228,19 +228,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerId = customer.id;
       }
 
-      // Create price for the plan
-      const priceAmount = plan === 'pro' ? 500 : 980; // ¥500 or ¥980
+      // Use existing product IDs for the plans
+      const productId = plan === 'pro' ? 'prod_SeC3r09HiUPQRm' : 'prod_SeC5sRCzptC9dB';
       
-      const price = await stripe.prices.create({
-        currency: 'jpy',
-        unit_amount: priceAmount,
-        recurring: {
-          interval: 'month',
-        },
-        product_data: {
-          name: `Liftify ${plan === 'pro' ? 'Pro' : 'Ultimate'} Plan`,
-        },
+      // Get the default price for the product
+      const prices = await stripe.prices.list({
+        product: productId,
+        active: true,
       });
+      
+      if (prices.data.length === 0) {
+        throw new Error(`No active prices found for product ${productId}`);
+      }
+      
+      const price = prices.data[0]; // Use the first (and likely only) active price
 
       // Create subscription
       const subscription = await stripe.subscriptions.create({
