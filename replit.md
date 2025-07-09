@@ -128,6 +128,7 @@ Changelog:
 - July 09, 2025. Replaced increment/decrement buttons with tap zones for mobile optimization
 - July 09, 2025. Implemented left-tap-decrease, right-tap-increase UI with subtle background +/- indicators
 - July 09, 2025. Migrated Stripe product IDs to environment variables for better security and management
+- July 09, 2025. Fixed Stripe API key configuration by swapping VITE_STRIPE_PUBLIC_KEY and STRIPE_SECRET_KEY values
 ```
 
 ## User Preferences

@@ -18,6 +18,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 if (!process.env.STRIPE_PRO_PRODUCT_ID || !process.env.STRIPE_ULTIMATE_PRODUCT_ID) {
   throw new Error('Missing required Stripe product IDs: STRIPE_PRO_PRODUCT_ID, STRIPE_ULTIMATE_PRODUCT_ID');
 }
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-12-18.acacia",
 });
