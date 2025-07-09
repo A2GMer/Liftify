@@ -115,12 +115,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     retry: false,
   });
 
-  // Initialize form with default values
-  const initializeForm = () => {
-    console.log('Initializing form with editingWorkoutId:', editingWorkoutId);
-    console.log('Existing workout data:', existingWorkout);
-    console.log('Recent workout data:', recentWorkout);
-    
+  // Initialize form with existing workout data (edit mode only)
+  useEffect(() => {
     if (editingWorkoutId && existingWorkout) {
       console.log('Loading existing workout data:', existingWorkout);
       setWorkoutDate(existingWorkout.date || '');
@@ -147,72 +143,30 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
         console.log('Setting existing sets:', existingSets);
         setSets(existingSets);
       }
-    } else if (!editingWorkoutId) {
-      // Always set current date and time for new workout (don't use recent workout's date)
-      const now = new Date();
-      setWorkoutDate(now.toISOString().split('T')[0]);
-      setWorkoutTime(now.toTimeString().slice(0, 5));
-      setWorkoutNotes('');
-      setAllOutFeeling([5]);
-      
-      // Auto-populate with recent workout data if available (sets only, not date/time)
-      if (recentWorkout && recentWorkout.sets && recentWorkout.sets.length > 0) {
-        console.log('Auto-populating with recent workout data:', recentWorkout);
-        const recentSets = recentWorkout.sets.map((set: any, index: number) => ({
-          setNumber: index + 1,
-          weight: parseFloat(set.weight) || 65,
-          reps: set.reps || 5,
-          powerBelt: Boolean(set.powerBelt),
-          buttUp: Boolean(set.buttUp),
-          assistance: Boolean(set.assistance),
-          failed: false, // Reset failed status for new workout
-          cheating: false,
-          formFocused: Boolean(set.formFocused),
-          repFocused: Boolean(set.repFocused),
-          notes: '', // Reset notes for new workout
-          showNotes: false,
-        }));
-        setSets(recentSets);
-      } else {
-        // Fallback to default sets if no recent workout
-        setSets([
-          {
-            setNumber: 1,
-            weight: 65,
-            reps: 5,
-            powerBelt: false,
-            buttUp: false,
-            assistance: false,
-            failed: false,
-            cheating: false,
-            formFocused: false,
-            repFocused: false,
-            notes: '',
-            showNotes: false,
-          },
-          {
-            setNumber: 2,
-            weight: 65,
-            reps: 5,
-            powerBelt: false,
-            buttUp: false,
-            assistance: false,
-            failed: false,
-            cheating: false,
-            formFocused: false,
-            repFocused: false,
-            notes: '',
-            showNotes: false,
-          },
-        ]);
-      }
     }
-  };
+  }, [editingWorkoutId, existingWorkout]);
 
-  // Set current date and time or load existing workout data
+  // Auto-populate sets from recent workout (new workout only)
   useEffect(() => {
-    initializeForm();
-  }, [editingWorkoutId, existingWorkout, recentWorkout]);
+    if (!editingWorkoutId && recentWorkout && recentWorkout.sets && recentWorkout.sets.length > 0) {
+      console.log('Auto-populating with recent workout data:', recentWorkout);
+      const recentSets = recentWorkout.sets.map((set: any, index: number) => ({
+        setNumber: index + 1,
+        weight: parseFloat(set.weight) || 65,
+        reps: set.reps || 5,
+        powerBelt: Boolean(set.powerBelt),
+        buttUp: Boolean(set.buttUp),
+        assistance: Boolean(set.assistance),
+        failed: false, // Reset failed status for new workout
+        cheating: false,
+        formFocused: Boolean(set.formFocused),
+        repFocused: Boolean(set.repFocused),
+        notes: '', // Reset notes for new workout
+        showNotes: false,
+      }));
+      setSets(recentSets);
+    }
+  }, [editingWorkoutId, recentWorkout]);
 
   // Helper functions for tap-based controls
   const updateSetWeight = (index: number, increment: boolean) => {
