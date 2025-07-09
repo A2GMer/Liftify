@@ -148,14 +148,14 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
         setSets(existingSets);
       }
     } else if (!editingWorkoutId) {
-      // Set current date and time for new workout
+      // Always set current date and time for new workout (don't use recent workout's date)
       const now = new Date();
       setWorkoutDate(now.toISOString().split('T')[0]);
       setWorkoutTime(now.toTimeString().slice(0, 5));
       setWorkoutNotes('');
       setAllOutFeeling([5]);
       
-      // Auto-populate with recent workout data if available
+      // Auto-populate with recent workout data if available (sets only, not date/time)
       if (recentWorkout && recentWorkout.sets && recentWorkout.sets.length > 0) {
         console.log('Auto-populating with recent workout data:', recentWorkout);
         const recentSets = recentWorkout.sets.map((set: any, index: number) => ({
