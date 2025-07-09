@@ -77,8 +77,9 @@ const CheckoutForm = ({ plan }: { plan: string }) => {
 export default function Subscribe() {
   const [clientSecret, setClientSecret] = useState("");
   const [plan, setPlan] = useState<string>("");
+  const [userPlan, setUserPlan] = useState<string>("free");
   const { language, changeLanguage } = useLanguage();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const { toast } = useToast();
   
   // Redirect if not authenticated
@@ -103,27 +104,44 @@ export default function Subscribe() {
     const planParam = urlParams.get('plan') || 'pro';
     setPlan(planParam);
     
-    // Create subscription as soon as the page loads
-    apiRequest("POST", "/api/create-subscription", { plan: planParam })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientSecret(data.clientSecret);
-      })
-      .catch((error) => {
-        if (isUnauthorizedError(error)) {
-          toast({
-            title: "Unauthorized",
-            description: "You are logged out. Logging in again...",
-            variant: "destructive",
-          });
-          setTimeout(() => {
-            window.location.href = "/api/login";
-          }, 500);
-          return;
-        }
-        console.error('Error creating subscription:', error);
-      });
-  }, [isAuthenticated, authLoading, toast]);
+    // Set user's current plan
+    if (user?.subscriptionPlan) {
+      setUserPlan(user.subscriptionPlan);
+    }
+    
+    // Only create subscription if user doesn't already have this plan
+    if (user?.subscriptionPlan !== planParam || user?.subscriptionStatus !== 'active') {
+      apiRequest("POST", "/api/create-subscription", { plan: planParam })
+        .then((res) => res.json())
+        .then((data) => {
+          setClientSecret(data.clientSecret);
+        })
+        .catch((error) => {
+          if (isUnauthorizedError(error)) {
+            toast({
+              title: "Unauthorized",
+              description: "You are logged out. Logging in again...",
+              variant: "destructive",
+            });
+            setTimeout(() => {
+              window.location.href = "/api/login";
+            }, 500);
+            return;
+          }
+          
+          if (error.message.includes('already has')) {
+            toast({
+              title: t("subscribe.alreadySubscribed", language),
+              description: t("subscribe.alreadySubscribedDesc", language),
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          console.error('Error creating subscription:', error);
+        });
+    }
+  }, [isAuthenticated, authLoading, toast, user]);
 
   const getPlanInfo = () => {
     if (plan === 'pro') {
@@ -201,40 +219,142 @@ export default function Subscribe() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Plan Summary */}
-          <Card>
+        {/* All Plans Display */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {/* Free Plan */}
+          <Card className={`${userPlan === 'free' ? 'border-green-500 bg-green-50' : ''}`}>
             <CardHeader>
               <CardTitle className="text-center">
-                {planInfo.name} {t("subscribe.plan", language)}
+                {t("pricing.free", language)}
+                {userPlan === 'free' && <span className="text-green-600 text-sm ml-2">({t("subscribe.current", language)})</span>}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {planInfo.price}
-                </div>
-                <p className="text-gray-600">{planInfo.period}</p>
+                <div className="text-3xl font-bold text-gray-900 mb-1">¥0</div>
+                <p className="text-gray-600">{t("subscribe.perMonth", language)}</p>
               </div>
-              
-              <ul className="space-y-3">
-                {planInfo.features.map((feature, index) => (
-                  <li key={index} className="flex items-start space-x-3">
-                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                    <span className="text-gray-700">{feature}</span>
-                  </li>
-                ))}
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.freeFeature1", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.freeFeature2", language)}</span>
+                </li>
               </ul>
+              <Button 
+                disabled={userPlan === 'free'}
+                className="w-full bg-gray-500 cursor-not-allowed"
+              >
+                {userPlan === 'free' ? t("subscribe.currentPlan", language) : t("subscribe.downgrade", language)}
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Payment Form */}
+          {/* Pro Plan */}
+          <Card className={`${userPlan === 'pro' ? 'border-green-500 bg-green-50' : plan === 'pro' ? 'border-blue-500 bg-blue-50' : ''}`}>
+            <CardHeader>
+              <CardTitle className="text-center">
+                {t("pricing.pro", language)}
+                {userPlan === 'pro' && <span className="text-green-600 text-sm ml-2">({t("subscribe.current", language)})</span>}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center mb-6">
+                <div className="text-3xl font-bold text-gray-900 mb-1">¥500</div>
+                <p className="text-gray-600">{t("subscribe.perMonth", language)}</p>
+              </div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.proFeature1", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.proFeature2", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.proFeature3", language)}</span>
+                </li>
+              </ul>
+              <Button 
+                disabled={userPlan === 'pro'}
+                className={`w-full ${userPlan === 'pro' ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                onClick={() => window.location.href = '/subscribe?plan=pro'}
+              >
+                {userPlan === 'pro' ? t("subscribe.currentPlan", language) : t("subscribe.selectPlan", language)}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Ultimate Plan */}
+          <Card className={`${userPlan === 'ultimate' ? 'border-green-500 bg-green-50' : plan === 'ultimate' ? 'border-purple-500 bg-purple-50' : ''}`}>
+            <CardHeader>
+              <CardTitle className="text-center">
+                {t("pricing.ultimate", language)}
+                {userPlan === 'ultimate' && <span className="text-green-600 text-sm ml-2">({t("subscribe.current", language)})</span>}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center mb-6">
+                <div className="text-3xl font-bold text-gray-900 mb-1">¥980</div>
+                <p className="text-gray-600">{t("subscribe.perMonth", language)}</p>
+              </div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.ultimateFeature1", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.ultimateFeature2", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.ultimateFeature3", language)}</span>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-gray-700">{t("subscribe.ultimateFeature4", language)}</span>
+                </li>
+              </ul>
+              <Button 
+                disabled={true}
+                className="w-full bg-gray-500 cursor-not-allowed"
+              >
+                {t("subscribe.comingSoon", language)}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Selected Plan Payment Form */}
+        {plan && plan !== 'free' && userPlan !== plan && clientSecret && (
           <Card>
             <CardHeader>
-              <CardTitle>
-                {t("subscribe.paymentInfo", language)}
+              <CardTitle className="text-center">
+                {t("subscribe.paymentInfo", language)} - {plan === 'pro' ? t("pricing.pro", language) : t("pricing.ultimate", language)}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -243,7 +363,7 @@ export default function Subscribe() {
               </Elements>
             </CardContent>
           </Card>
-        </div>
+        )}
 
         <div className="mt-8 text-center">
           <Button 

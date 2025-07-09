@@ -211,6 +211,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Check if user already has this plan
+      if (user.subscriptionPlan === plan && user.subscriptionStatus === 'active') {
+        return res.status(400).json({ message: `User already has ${plan} plan` });
+      }
+
       // If user already has a subscription, retrieve it
       if (user.stripeSubscriptionId) {
         const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
@@ -266,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Update user with Stripe info
-      await storage.updateUserStripeInfo(userId, customerId, subscription.id);
+      await storage.updateUserStripeInfo(userId, customerId, subscription.id, plan);
 
       const invoice = subscription.latest_invoice as Stripe.Invoice;
       const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
