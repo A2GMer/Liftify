@@ -79,11 +79,11 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
           datasets: [{
             label: selectedChart === 'volume' ? t("home.chart.title", language) : '推定1RM (kg)',
             data: chartData,
-            borderColor: selectedChart === 'volume' ? 'hsl(6, 78%, 57%)' : 'hsl(142, 76%, 36%)', // coral for volume, green for 1RM
-            backgroundColor: selectedChart === 'volume' ? 'hsla(6, 78%, 57%, 0.1)' : 'hsla(142, 76%, 36%, 0.1)',
+            borderColor: selectedChart === 'volume' ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 30%)', // black for volume, dark gray for 1RM
+            backgroundColor: selectedChart === 'volume' ? 'hsla(0, 0%, 0%, 0.1)' : 'hsla(0, 0%, 30%, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: selectedChart === 'volume' ? 'hsl(6, 78%, 57%)' : 'hsl(142, 76%, 36%)',
+            pointBackgroundColor: selectedChart === 'volume' ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 30%)',
             pointBorderColor: 'white',
             pointBorderWidth: 2,
             pointRadius: 4,
@@ -104,7 +104,7 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
                 color: 'rgba(0, 0, 0, 0.1)'
               },
               ticks: {
-                color: 'hsl(25, 5.3%, 44.7%)'
+                color: 'hsl(0, 0%, 50%)'
               }
             },
             x: {
@@ -112,7 +112,7 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
                 display: false
               },
               ticks: {
-                color: 'hsl(25, 5.3%, 44.7%)'
+                color: 'hsl(0, 0%, 50%)'
               }
             }
           },

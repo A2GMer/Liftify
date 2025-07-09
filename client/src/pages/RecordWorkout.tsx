@@ -104,7 +104,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
       setAllOutFeeling([existingWorkout.allOutFeeling || 5]);
       
       // Load sets data
-      const existingSets = existingWorkout.sets.map((set: any) => ({
+      const existingSets = existingWorkout.sets?.map((set: any) => ({
         setNumber: set.setNumber,
         weight: parseFloat(set.weight),
         reps: set.reps,
@@ -116,7 +116,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
         notes: set.notes || '',
         showNotes: false,
       }));
-      setSets(existingSets);
+      setSets(existingSets || []);
     } else if (!editingWorkoutId) {
       // Set current date and time for new workout
       const now = new Date();

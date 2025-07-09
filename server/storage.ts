@@ -11,7 +11,7 @@ import {
   type WorkoutWithSets,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -165,12 +165,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(workouts)
       .innerJoin(sets, eq(workouts.id, sets.workoutId))
-      .where(
-        and(
-          eq(workouts.userId, userId),
-          eq(sets.failed, false) // Only include non-failed sets
-        )
-      )
+      .where(eq(workouts.userId, userId))
       .orderBy(desc(workouts.date))
       .limit(days * 10); // Get more sets to process
 
@@ -179,6 +174,9 @@ export class DatabaseStorage implements IStorage {
       const date = row.date;
       const weight = parseFloat(row.weight);
       const reps = row.reps;
+      
+      // Skip if data is invalid
+      if (!weight || !reps) return acc;
       
       // Calculate 1RM using the oneRMCalculator
       const oneRM = this.calculate1RM(weight, reps);
