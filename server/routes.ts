@@ -308,42 +308,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update plan after successful payment (with token-based auth for security)
-  app.post('/api/update-plan-after-payment', async (req, res) => {
+  // Update plan after successful payment (secured with proper validation)
+  app.post('/api/update-plan-after-payment', isAuthenticated, async (req: any, res) => {
     try {
-      const { paymentIntentId, plan, userId, authToken } = req.body;
+      const { paymentIntentId, plan } = req.body;
+      const userId = req.user.claims.sub;
       
       console.log('Updating plan after payment:', { userId, paymentIntentId, plan });
       
-      // Verify the payment intent actually succeeded
+      // Validate input parameters
       if (!paymentIntentId) {
         return res.status(400).json({ message: "Payment intent ID required" });
       }
       
+      if (!plan || !['pro', 'ultimate'].includes(plan)) {
+        return res.status(400).json({ message: "Invalid plan type" });
+      }
+      
+      // Verify the payment intent actually succeeded
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       if (paymentIntent.status !== 'succeeded') {
         return res.status(400).json({ message: "Payment not completed" });
       }
       
-      // Get user ID from payment intent through subscription
-      let actualUserId = userId;
-      if (!actualUserId && paymentIntentId) {
-        const subscriptions = await stripe.subscriptions.list({ limit: 100 });
-        for (const subscription of subscriptions.data) {
-          const invoice = subscription.latest_invoice as Stripe.Invoice;
-          if (invoice.payment_intent === paymentIntentId) {
-            const customerId = subscription.customer as string;
-            const user = await storage.getUserByStripeCustomerId(customerId);
-            if (user) {
-              actualUserId = user.id;
-              break;
-            }
-          }
-        }
+      // Verify this payment intent belongs to the authenticated user
+      const user = await storage.getUser(userId);
+      if (!user || !user.stripeCustomerId) {
+        return res.status(400).json({ message: "User not found or no Stripe customer" });
       }
       
-      if (!actualUserId) {
-        return res.status(400).json({ message: "User not found for payment intent" });
+      // Check if payment intent belongs to this user's customer
+      if (paymentIntent.customer !== user.stripeCustomerId) {
+        return res.status(403).json({ message: "Payment intent does not belong to this user" });
+      }
+      
+      // Prevent duplicate updates for the same payment intent
+      const existingUser = await storage.getUser(userId);
+      if (existingUser && existingUser.subscriptionPlan === plan && existingUser.subscriptionStatus === 'active') {
+        return res.status(200).json({ 
+          message: "User already has this plan", 
+          user: existingUser 
+        });
       }
       
       // Update user plan to paid plan with active status
@@ -354,7 +359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           subscriptionStatus: 'active',
           updatedAt: new Date(),
         })
-        .where(eq(users.id, actualUserId))
+        .where(eq(users.id, userId))
         .returning();
       
       console.log('User plan updated successfully:', updatedUser);

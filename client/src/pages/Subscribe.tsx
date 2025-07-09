@@ -70,8 +70,7 @@ const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
           try {
             await apiRequest("POST", "/api/update-plan-after-payment", {
               paymentIntentId: error.payment_intent.id,
-              plan: plan,
-              userId: user?.id
+              plan: plan
             });
             console.log('Plan updated after payment');
           } catch (updateError) {
@@ -104,8 +103,7 @@ const CheckoutForm = ({ plan, user }: { plan: string, user: any }) => {
         try {
           await apiRequest("POST", "/api/update-plan-after-payment", {
             paymentIntentId: paymentIntent.id,
-            plan: plan,
-            userId: user?.id
+            plan: plan
           });
           console.log('Plan updated after payment');
         } catch (updateError) {
