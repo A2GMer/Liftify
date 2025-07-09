@@ -444,6 +444,13 @@ export default function Subscribe() {
           >
             {t("common.back", language)}
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.assign('/')}
+            className="ml-4"
+          >
+            {t("navigation.back", language)}
+          </Button>
         </div>
       </div>
     </div>
