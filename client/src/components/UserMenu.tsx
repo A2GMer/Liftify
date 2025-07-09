@@ -14,15 +14,14 @@ import { type Language, t } from "@/lib/i18n";
 interface UserMenuProps {
   language: Language;
   onMyPage: () => void;
-  onPlanChange: () => void;
 }
 
-export function UserMenu({ language, onMyPage, onPlanChange }: UserMenuProps) {
+export function UserMenu({ language, onMyPage }: UserMenuProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = () => {
-    window.location.href = "/api/logout";
+    window.location.assign("/api/logout");
   };
 
   const getUserInitials = () => {
@@ -52,7 +51,7 @@ export function UserMenu({ language, onMyPage, onPlanChange }: UserMenuProps) {
           <User className="mr-2 h-4 w-4" />
           <span>{t("userMenu.myPage", language)}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onPlanChange}>
+        <DropdownMenuItem onClick={() => window.location.assign("/subscribe")}>
           <CreditCard className="mr-2 h-4 w-4" />
           <span>{t("userMenu.planChange", language)}</span>
         </DropdownMenuItem>

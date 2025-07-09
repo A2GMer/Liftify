@@ -56,10 +56,7 @@ function Router() {
     setCurrentView('mypage');
   };
 
-  const handlePlanChange = () => {
-    // Use window.location.assign instead of direct href assignment
-    window.location.assign("/subscribe");
-  };
+
 
   return (
     <Switch>
@@ -77,13 +74,13 @@ function Router() {
               <RecordWorkout onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} editingWorkoutId={editingWorkoutId} />
             )}
             {currentView === 'mypage' && (
-              <MyPage onBack={handleBackToHome} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
+              <MyPage onBack={handleBackToHome} language={language} onLanguageChange={changeLanguage} />
             )}
             {currentView === 'home' && (
-              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} language={language} onLanguageChange={changeLanguage} />
             )}
             {currentView === 'landing' && (
-              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} onPlanChange={handlePlanChange} language={language} onLanguageChange={changeLanguage} />
+              <Home onNewWorkout={handleNewWorkout} onEditWorkout={handleEditWorkout} onMyPage={handleMyPage} language={language} onLanguageChange={changeLanguage} />
             )}
           </>
         )}

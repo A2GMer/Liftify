@@ -13,12 +13,11 @@ import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface MyPageProps {
   onBack: () => void;
-  onPlanChange: () => void;
   language: Language;
   onLanguageChange: (language: Language) => void;
 }
 
-export default function MyPage({ onBack, onPlanChange, language, onLanguageChange }: MyPageProps) {
+export default function MyPage({ onBack, language, onLanguageChange }: MyPageProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -151,7 +150,7 @@ export default function MyPage({ onBack, onPlanChange, language, onLanguageChang
                    'Free プラン'}
                 </p>
               </div>
-              <Button onClick={onPlanChange} variant="outline" size="sm">
+              <Button onClick={() => window.location.assign("/subscribe")} variant="outline" size="sm">
                 {t("userMenu.planChange", language)}
               </Button>
             </div>

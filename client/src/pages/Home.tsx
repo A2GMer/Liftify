@@ -18,12 +18,11 @@ interface HomeProps {
   onNewWorkout: () => void;
   onEditWorkout: (workoutId: number) => void;
   onMyPage: () => void;
-  onPlanChange: () => void;
   language: Language;
   onLanguageChange: (language: Language) => void;
 }
 
-export default function Home({ onNewWorkout, onEditWorkout, onMyPage, onPlanChange, language, onLanguageChange }: HomeProps) {
+export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, onLanguageChange }: HomeProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -86,7 +85,6 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, onPlanChan
             <UserMenu 
               language={language} 
               onMyPage={onMyPage} 
-              onPlanChange={onPlanChange} 
             />
           </div>
         </div>
