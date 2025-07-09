@@ -57,6 +57,13 @@ export const translations = {
     "myPage.workoutStats": "Workout Statistics",
     "myPage.totalWorkouts": "Total Workouts",
     "myPage.totalVolume": "Total Volume",
+    "myPage.continueUntil": "You can continue to use the Pro plan until",
+    "myPage.autoDowngrade": "After that, it will automatically change to Free plan",
+    "myPage.scheduledCancellation": "Scheduled for cancellation at period end",
+    "myPage.immediateCancel": "Cancel Now",
+    "myPage.periodEndCancel": "Cancel at Period End",
+    "myPage.cancelledInfo": "Cancelled",
+    "myPage.activeUntil": "Active until",
     
     // Common
     "common.back": "Back",
@@ -170,6 +177,13 @@ export const translations = {
     "myPage.workoutStats": "ワークアウト統計",
     "myPage.totalWorkouts": "総ワークアウト数",
     "myPage.totalVolume": "総ボリューム",
+    "myPage.continueUntil": "まで引き続きProプランをご利用になれます",
+    "myPage.autoDowngrade": "その後、自動的にFreeプランに変更されます",
+    "myPage.scheduledCancellation": "期間終了後にキャンセル予定",
+    "myPage.immediateCancel": "今すぐキャンセル",
+    "myPage.periodEndCancel": "期間終了時にキャンセル",
+    "myPage.cancelledInfo": "キャンセル済み",
+    "myPage.activeUntil": "まで有効",
     
     // Common
     "common.back": "戻る",
@@ -283,6 +297,13 @@ export const translations = {
     "myPage.workoutStats": "Statistiques d'Entraînement",
     "myPage.totalWorkouts": "Total des Entraînements",
     "myPage.totalVolume": "Volume Total",
+    "myPage.continueUntil": "Vous pouvez continuer à utiliser le plan Pro jusqu'au",
+    "myPage.autoDowngrade": "Après cela, il changera automatiquement pour le plan gratuit",
+    "myPage.scheduledCancellation": "Programmé pour annulation à la fin de la période",
+    "myPage.immediateCancel": "Annuler maintenant",
+    "myPage.periodEndCancel": "Annuler à la fin de la période",
+    "myPage.cancelledInfo": "Annulé",
+    "myPage.activeUntil": "Actif jusqu'au",
     
     // Common
     "common.back": "Retour",
@@ -401,6 +422,13 @@ export const translations = {
     "myPage.workoutStats": "Trainingsstatistiken",
     "myPage.totalWorkouts": "Gesamte Trainings",
     "myPage.totalVolume": "Gesamtvolumen",
+    "myPage.continueUntil": "Sie können den Pro-Plan bis zum",
+    "myPage.autoDowngrade": "Danach wird automatisch auf den kostenlosen Plan gewechselt",
+    "myPage.scheduledCancellation": "Geplante Kündigung zum Periodenende",
+    "myPage.immediateCancel": "Sofort kündigen",
+    "myPage.periodEndCancel": "Am Periodenende kündigen",
+    "myPage.cancelledInfo": "Gekündigt",
+    "myPage.activeUntil": "Aktiv bis",
     
     // Common
     "common.back": "Zurück",

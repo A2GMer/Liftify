@@ -383,23 +383,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Check if user has subscription period info
+      const now = new Date();
+      const subscriptionStartedAt = user.subscriptionStartedAt ? new Date(user.subscriptionStartedAt) : null;
+      const subscriptionPeriodEnd = user.subscriptionPeriodEnd ? new Date(user.subscriptionPeriodEnd) : null;
+      
+      let immediateCancel = true;
+      
+      if (subscriptionStartedAt && subscriptionPeriodEnd) {
+        // Check if it's been less than 30 days since subscription started
+        const daysSinceStart = (now.getTime() - subscriptionStartedAt.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSinceStart < 30) {
+          immediateCancel = false;
+        }
+      }
+
       // Cancel Stripe subscription if it exists
       if (user.stripeSubscriptionId) {
         try {
-          const canceledSubscription = await stripe.subscriptions.cancel(user.stripeSubscriptionId);
-          console.log("Stripe subscription canceled:", canceledSubscription.id);
+          if (immediateCancel) {
+            // Immediate cancellation for subscriptions older than 30 days
+            const canceledSubscription = await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+            console.log("Stripe subscription canceled immediately:", canceledSubscription.id);
+          } else {
+            // Schedule cancellation at period end for subscriptions within 30 days
+            const updatedSubscription = await stripe.subscriptions.update(user.stripeSubscriptionId, {
+              cancel_at_period_end: true
+            });
+            console.log("Stripe subscription scheduled for cancellation:", updatedSubscription.id);
+          }
         } catch (stripeError) {
           console.error("Error canceling Stripe subscription:", stripeError);
           return res.status(500).json({ message: "Failed to cancel subscription with Stripe" });
         }
       }
 
-      // Update user to free plan only after successful Stripe cancellation
-      const updatedUser = await storage.cancelUserSubscription(userId);
+      // Update user based on cancellation type
+      let updatedUser;
+      if (immediateCancel) {
+        updatedUser = await storage.cancelUserSubscription(userId);
+      } else {
+        updatedUser = await storage.scheduleSubscriptionCancellation(userId);
+      }
       
       res.json({
-        message: "Subscription canceled successfully",
-        user: updatedUser
+        message: immediateCancel ? "Subscription canceled successfully" : "Subscription will be canceled at period end",
+        user: updatedUser,
+        immediateCancel
       });
     } catch (error: any) {
       console.error("Error canceling subscription:", error);
@@ -468,8 +498,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               console.log('Webhook - Determined plan:', plan, 'for product:', price.product);
               
-              // Update user plan only after successful payment
+              // Update user plan and set subscription period
+              const currentDate = new Date();
+              const periodEnd = new Date(currentDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+              
               const updatedUser = await storage.updateUserStripeInfo(user.id, customerId, user.stripeSubscriptionId || '', plan);
+              
+              // Set subscription as active with proper period
+              await db.update(users).set({
+                subscriptionStatus: 'active',
+                subscriptionStartedAt: currentDate,
+                subscriptionPeriodEnd: periodEnd,
+                subscriptionCancelAtPeriodEnd: false,
+                updatedAt: new Date()
+              }).where(eq(users.id, user.id));
+              
               console.log(`Webhook - User ${user.id} upgraded to ${plan} plan successfully`);
             } else {
               console.error('Webhook - User not found for customer:', customerId);

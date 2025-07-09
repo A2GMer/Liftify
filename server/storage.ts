@@ -20,6 +20,7 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan?: string): Promise<User>;
   cancelUserSubscription(userId: string): Promise<User>;
+  scheduleSubscriptionCancellation(userId: string): Promise<User>;
   
   // Workout operations
   createWorkout(workout: InsertWorkout): Promise<Workout>;
@@ -72,6 +73,9 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserStripeInfo(userId: string, customerId: string, subscriptionId: string, plan: string = 'pro'): Promise<User> {
     const status = plan === 'free' ? 'incomplete' : 'incomplete'; // Always incomplete until payment is confirmed
+    const subscriptionStartedAt = new Date();
+    const subscriptionPeriodEnd = new Date(subscriptionStartedAt.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+    
     const [user] = await db
       .update(users)
       .set({
@@ -79,6 +83,9 @@ export class DatabaseStorage implements IStorage {
         stripeSubscriptionId: subscriptionId,
         subscriptionPlan: plan,
         subscriptionStatus: status,
+        subscriptionStartedAt: subscriptionStartedAt,
+        subscriptionPeriodEnd: subscriptionPeriodEnd,
+        subscriptionCancelAtPeriodEnd: false,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
@@ -93,6 +100,21 @@ export class DatabaseStorage implements IStorage {
         subscriptionPlan: 'free',
         subscriptionStatus: 'canceled',
         stripeSubscriptionId: null,
+        subscriptionPeriodEnd: null,
+        subscriptionCancelAtPeriodEnd: false,
+        subscriptionStartedAt: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async scheduleSubscriptionCancellation(userId: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        subscriptionCancelAtPeriodEnd: true,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

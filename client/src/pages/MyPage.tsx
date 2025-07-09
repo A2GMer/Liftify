@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { TopNav } from "@/components/TopNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,8 @@ import { ArrowLeft, User, CreditCard, Calendar, Trophy } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface MyPageProps {
@@ -20,6 +22,53 @@ interface MyPageProps {
 export default function MyPage({ onBack, language, onLanguageChange }: MyPageProps) {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest('POST', '/api/cancel-subscription');
+    },
+    onSuccess: () => {
+      toast({
+        title: t("subscribe.downgradeSuccess", language),
+        description: t("subscribe.downgradeSuccessDesc", language),
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      setIsLoading(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.assign("/api/login");
+        }, 500);
+        return;
+      }
+      toast({
+        title: t("subscribe.downgradeError", language),
+        description: t("subscribe.downgradeErrorDesc", language),
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    },
+  });
+
+  const handleCancelSubscription = async () => {
+    const cancelButtonText = getCancelButtonText();
+    const confirmMessage = cancelButtonText === t("myPage.immediateCancel", language) 
+      ? "サブスクリプションをすぐにキャンセルしますか？"
+      : "サブスクリプションを期間終了時にキャンセルしますか？";
+    
+    if (confirm(confirmMessage)) {
+      setIsLoading(true);
+      cancelSubscriptionMutation.mutate();
+    }
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -55,6 +104,63 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
       default:
         return <Badge variant="secondary">Free</Badge>;
     }
+  };
+
+  const getPlanStatusMessage = () => {
+    if (!user) return null;
+    
+    const plan = user.subscriptionPlan || 'free';
+    if (plan === 'free') return null;
+    
+    const now = new Date();
+    const subscriptionStartedAt = user.subscriptionStartedAt ? new Date(user.subscriptionStartedAt) : null;
+    const subscriptionPeriodEnd = user.subscriptionPeriodEnd ? new Date(user.subscriptionPeriodEnd) : null;
+    
+    if (user.subscriptionCancelAtPeriodEnd && subscriptionPeriodEnd) {
+      const formattedDate = subscriptionPeriodEnd.toLocaleDateString();
+      return (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>{t("myPage.scheduledCancellation", language)}</strong>
+          </p>
+          <p className="text-sm text-yellow-700">
+            {t("myPage.continueUntil", language)} {formattedDate}
+          </p>
+          <p className="text-sm text-yellow-700">
+            {t("myPage.autoDowngrade", language)}
+          </p>
+        </div>
+      );
+    }
+    
+    if (subscriptionPeriodEnd) {
+      const formattedDate = subscriptionPeriodEnd.toLocaleDateString();
+      return (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            {t("myPage.activeUntil", language)} {formattedDate}
+          </p>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
+  const getCancelButtonText = () => {
+    if (!user) return t("myPage.immediateCancel", language);
+    
+    const now = new Date();
+    const subscriptionStartedAt = user.subscriptionStartedAt ? new Date(user.subscriptionStartedAt) : null;
+    
+    if (subscriptionStartedAt) {
+      const daysSinceStart = (now.getTime() - subscriptionStartedAt.getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSinceStart < 30) {
+        return t("myPage.periodEndCancel", language);
+      }
+    }
+    
+    return t("myPage.immediateCancel", language);
   };
 
   if (authLoading) {
@@ -125,6 +231,7 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
                   <span className="text-sm text-gray-500">{t("myPage.currentPlan", language)}:</span>
                   {getPlanBadge()}
                 </div>
+                {getPlanStatusMessage()}
               </div>
             </div>
           </CardContent>
@@ -150,9 +257,23 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
                    'Free プラン'}
                 </p>
               </div>
-              <Button onClick={() => window.location.assign("/subscribe")} variant="outline" size="sm">
-                {t("userMenu.planChange", language)}
-              </Button>
+              <div className="flex space-x-2">
+                <Button onClick={() => window.location.assign("/subscribe")} variant="outline" size="sm">
+                  {t("userMenu.planChange", language)}
+                </Button>
+                {(user?.subscriptionPlan === 'pro' || user?.subscriptionPlan === 'ultimate') && 
+                 !user?.subscriptionCancelAtPeriodEnd && (
+                  <Button 
+                    onClick={handleCancelSubscription}
+                    variant="outline" 
+                    size="sm"
+                    className="text-red-600 hover:bg-red-50 border-red-200"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? t("subscribe.processing", language) : getCancelButtonText()}
+                  </Button>
+                )}
+              </div>
             </div>
             
             <div className="flex justify-between items-center">
