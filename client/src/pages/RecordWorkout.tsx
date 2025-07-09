@@ -95,7 +95,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
 
   // Load existing workout data when in edit mode
   const { data: existingWorkout, isLoading: loadingWorkout } = useQuery({
-    queryKey: ['/api/workouts', editingWorkoutId],
+    queryKey: [`/api/workouts/${editingWorkoutId}`],
     enabled: !!editingWorkoutId,
     retry: false,
   });
@@ -106,7 +106,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
     console.log('Existing workout data:', existingWorkout);
     
     if (editingWorkoutId && existingWorkout) {
-      // Load existing workout data
       console.log('Loading existing workout data:', existingWorkout);
       setWorkoutDate(existingWorkout.date || '');
       setWorkoutTime(existingWorkout.time || '');
