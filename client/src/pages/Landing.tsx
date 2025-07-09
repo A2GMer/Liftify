@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, TrendingUp, Activity, Heart, Zap, Shield } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
+import chestVideoPath from "@assets/chest_1752043528152.mp4";
 
 interface LandingProps {
   onGetStarted: () => void;
@@ -17,19 +18,36 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
       <LanguageSwitcher currentLanguage={language} onLanguageChange={onLanguageChange} />
       
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
+      <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ filter: 'brightness(0.6) contrast(1.1)' }}
+        >
+          <source src={chestVideoPath} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+        
+        {/* Dot Pattern Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>
         
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
             {language === 'ja' ? 'ベンチプレスを' : 'Perfect Your'}
             <br />
-            <span className="text-gray-300">
+            <span className="text-gray-200">
               {language === 'ja' ? '極める' : 'Bench Press'}
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
             {language === 'ja' 
               ? 'タップ操作だけで記録。データで成長を可視化。科学的アプローチで限界突破。'
               : 'Track with taps. Visualize growth with data. Break limits with science.'
@@ -39,7 +57,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
           <Button 
             onClick={onGetStarted}
             size="lg"
-            className="bg-white text-black hover:bg-gray-100 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 rounded-full shadow-2xl"
+            className="bg-white text-black hover:bg-gray-100 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 rounded-full shadow-2xl backdrop-blur-sm"
           >
             {language === 'ja' ? 'トレーニングを始める' : 'Start Training'}
           </Button>
