@@ -433,7 +433,7 @@ export default function Subscribe() {
             </CardHeader>
             <CardContent>
               <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-gray-900 mb-1">¥500</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{t("pricing.proPrice", language)}</div>
                 <p className="text-gray-600">{t("subscribe.perMonth", language)}</p>
               </div>
               <ul className="space-y-3 mb-6">
@@ -476,7 +476,7 @@ export default function Subscribe() {
             </CardHeader>
             <CardContent>
               <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-gray-900 mb-1">¥980</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{t("pricing.ultimatePrice", language)}</div>
                 <p className="text-gray-600">{t("subscribe.perMonth", language)}</p>
               </div>
               <ul className="space-y-3 mb-6">

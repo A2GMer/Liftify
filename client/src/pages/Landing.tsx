@@ -322,7 +322,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">¥500</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">{t("pricing.proPrice", language)}</div>
                   <p className="text-gray-600">
                     {language === 'ja' ? '月額' : 'per month'}
                   </p>
@@ -377,7 +377,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Ultimate</h3>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">¥980</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">{t("pricing.ultimatePrice", language)}</div>
                   <p className="text-gray-600">
                     {language === 'ja' ? '月額' : 'per month'}
                   </p>

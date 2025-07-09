@@ -123,6 +123,8 @@ export const translations = {
     "pricing.freeFeature1": "Basic workout tracking",
     "pricing.freeFeature2": "30-day data retention",
     "pricing.freeFeature3": "Simple analytics",
+    "pricing.proPrice": "$2.99",
+    "pricing.ultimatePrice": "$9.99",
   },
   ja: {
     "hero.title": "Liftify",
@@ -249,6 +251,8 @@ export const translations = {
     "pricing.freeFeature1": "基本的なワークアウト記録",
     "pricing.freeFeature2": "30日間データ保持",
     "pricing.freeFeature3": "シンプルな分析",
+    "pricing.proPrice": "¥500",
+    "pricing.ultimatePrice": "¥1,500",
   },
   fr: {
     "hero.title": "Liftify",
@@ -379,6 +383,8 @@ export const translations = {
     "pricing.freeFeature1": "Suivi d'entraînement de base",
     "pricing.freeFeature2": "Rétention de données de 30 jours",
     "pricing.freeFeature3": "Analyses simples",
+    "pricing.proPrice": "2,99€",
+    "pricing.ultimatePrice": "9,99€",
   },
   de: {
     "hero.title": "Liftify",
@@ -509,6 +515,8 @@ export const translations = {
     "pricing.freeFeature1": "Grundlegendes Workout-Tracking",
     "pricing.freeFeature2": "30-Tage Datenaufbewahrung",
     "pricing.freeFeature3": "Einfache Analysen",
+    "pricing.proPrice": "2,99€",
+    "pricing.ultimatePrice": "9,99€",
   },
 };
 
