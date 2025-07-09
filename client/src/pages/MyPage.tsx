@@ -190,7 +190,7 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
       {/* Header */}
       <header className="bg-black text-white p-4 sticky top-0 z-40">
         <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center">
             <Button
               onClick={onBack}
               variant="ghost"
@@ -200,7 +200,6 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t("common.back", language)}
             </Button>
-            <img src={logoWhitePath} alt="Liftify" className="h-12 w-auto" />
           </div>
         </div>
       </header>
