@@ -14,6 +14,7 @@ import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
+import { validateWorkoutData, sanitizeText } from "@/lib/sanitizer";
 import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
 interface SetData {
@@ -384,7 +385,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
         failed: set.failed,
         formFocused: set.formFocused,
         repFocused: set.repFocused,
-        notes: set.notes,
+        notes: sanitizeText(set.notes),
         isCheatingSet: false,
       });
       
@@ -400,23 +401,31 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
           failed: false, // cheating sets are not failed
           formFocused: set.formFocused,
           repFocused: set.repFocused,
-          notes: `チーティング: ${set.notes}`,
+          notes: sanitizeText(`チーティング: ${set.notes}`),
           isCheatingSet: true,
         });
       }
     });
 
-    const workoutData = {
-      workout: {
-        date: workoutDate,
-        time: editingWorkoutId ? existingWorkout?.time : workoutTime, // Don't update time in edit mode
-        notes: workoutNotes,
-        allOutFeeling: allOutFeeling[0],
-      },
-      sets: allSets,
-    };
+    try {
+      const workoutData = validateWorkoutData({
+        workout: {
+          date: workoutDate,
+          time: editingWorkoutId ? existingWorkout?.time : workoutTime, // Don't update time in edit mode
+          notes: workoutNotes,
+          allOutFeeling: allOutFeeling[0],
+        },
+        sets: allSets,
+      });
 
-    saveWorkoutMutation.mutate(workoutData);
+      saveWorkoutMutation.mutate(workoutData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Invalid workout data",
+        variant: "destructive",
+      });
+    }
   };
 
   const addSet = () => {
@@ -830,9 +839,10 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                       <Textarea
                         rows={2}
                         value={set.notes}
-                        onChange={(e) => updateSetNotes(index, e.target.value)}
+                        onChange={(e) => updateSetNotes(index, sanitizeText(e.target.value))}
                         placeholder="How did this set feel?"
                         className="focus:ring-coral focus:border-coral"
+                        maxLength={500}
                       />
                     </div>
                   )}
@@ -868,9 +878,10 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                 id="workoutNotes"
                 rows={3}
                 value={workoutNotes}
-                onChange={(e) => setWorkoutNotes(e.target.value)}
+                onChange={(e) => setWorkoutNotes(sanitizeText(e.target.value))}
                 placeholder="Overall thoughts about today's workout..."
                 className="focus:ring-coral focus:border-coral"
+                maxLength={1000}
               />
             </div>
             

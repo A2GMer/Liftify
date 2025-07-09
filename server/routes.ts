@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import express from "express";
+import { body, param, validationResult } from "express-validator";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertWorkoutSchema, insertSetSchema, users } from "@shared/schema";
@@ -9,6 +10,41 @@ import Stripe from "stripe";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { getStripeConfig, logStripeEnvironment } from "./stripe-config";
+
+// Validation middleware
+const validateRequest = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      message: "Validation failed", 
+      errors: errors.array() 
+    });
+  }
+  next();
+};
+
+// Input sanitization helper
+const sanitizeInput = (input: any): any => {
+  if (typeof input === 'string') {
+    // Remove potential XSS patterns
+    return input
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+\s*=/gi, '')
+      .trim();
+  }
+  if (typeof input === 'object' && input !== null) {
+    if (Array.isArray(input)) {
+      return input.map(sanitizeInput);
+    }
+    const sanitized: any = {};
+    for (const key in input) {
+      sanitized[key] = sanitizeInput(input[key]);
+    }
+    return sanitized;
+  }
+  return input;
+};
 
 const createWorkoutWithSetsSchema = z.object({
   workout: insertWorkoutSchema.omit({ userId: true }),
@@ -64,40 +100,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/workouts/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const workoutId = parseInt(req.params.id);
-      if (isNaN(workoutId)) {
-        return res.status(400).json({ message: 'Invalid workout ID' });
+  app.get('/api/workouts/:id', 
+    param('id').isInt({ min: 1 }).withMessage('Workout ID must be a positive integer'),
+    validateRequest,
+    isAuthenticated, 
+    async (req: any, res) => {
+      try {
+        const workoutId = parseInt(req.params.id);
+        
+        const workout = await storage.getWorkoutById(workoutId);
+        if (!workout) {
+          return res.status(404).json({ message: "Workout not found" });
+        }
+        
+        // Check if the workout belongs to the authenticated user
+        if (workout.userId !== req.user.claims.sub) {
+          return res.status(403).json({ message: 'Unauthorized' });
+        }
+        
+        res.json(workout);
+      } catch (error) {
+        console.error("Error fetching workout:", error);
+        res.status(500).json({ message: "Failed to fetch workout" });
       }
-      
-      const workout = await storage.getWorkoutById(workoutId);
-      if (!workout) {
-        return res.status(404).json({ message: "Workout not found" });
-      }
-      
-      // Check if the workout belongs to the authenticated user
-      if (workout.userId !== req.user.claims.sub) {
-        return res.status(403).json({ message: 'Unauthorized' });
-      }
-      
-      res.json(workout);
-    } catch (error) {
-      console.error("Error fetching workout:", error);
-      res.status(500).json({ message: "Failed to fetch workout" });
-    }
-  });
+    });
 
-  app.post('/api/workouts', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ message: "User ID not found" });
-      }
+  app.post('/api/workouts', 
+    body('workout.date').isISO8601().withMessage('Invalid date format'),
+    body('workout.time').isString().isLength({ min: 1, max: 10 }).withMessage('Invalid time format'),
+    body('workout.notes').optional().isString().isLength({ max: 1000 }).withMessage('Notes too long'),
+    body('sets').isArray({ min: 1 }).withMessage('At least one set is required'),
+    body('sets.*.weight').isFloat({ min: 0, max: 1000 }).withMessage('Weight must be between 0 and 1000'),
+    body('sets.*.reps').isInt({ min: 1, max: 100 }).withMessage('Reps must be between 1 and 100'),
+    validateRequest,
+    isAuthenticated, 
+    async (req: any, res) => {
+      try {
+        const userId = req.user?.claims?.sub;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
 
-      console.log("Received workout data:", JSON.stringify(req.body, null, 2));
-      
-      const { workout: workoutData, sets: setsData } = req.body;
+        // Sanitize input data
+        const sanitizedBody = sanitizeInput(req.body);
+        console.log("Received workout data:", JSON.stringify(sanitizedBody, null, 2));
+        
+        const { workout: workoutData, sets: setsData } = sanitizedBody;
       
       // Create workout
       const workout = await storage.createWorkout({
@@ -124,18 +172,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update workout
-  app.put('/api/workouts/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      const workoutId = parseInt(req.params.id);
-      
-      if (!userId) {
-        return res.status(401).json({ message: "User ID not found" });
-      }
+  app.put('/api/workouts/:id', 
+    param('id').isInt({ min: 1 }).withMessage('Workout ID must be a positive integer'),
+    body('workout.date').isISO8601().withMessage('Invalid date format'),
+    body('workout.time').isString().isLength({ min: 1, max: 10 }).withMessage('Invalid time format'),
+    body('workout.notes').optional().isString().isLength({ max: 1000 }).withMessage('Notes too long'),
+    body('sets').isArray({ min: 1 }).withMessage('At least one set is required'),
+    body('sets.*.weight').isFloat({ min: 0, max: 1000 }).withMessage('Weight must be between 0 and 1000'),
+    body('sets.*.reps').isInt({ min: 1, max: 100 }).withMessage('Reps must be between 1 and 100'),
+    validateRequest,
+    isAuthenticated, 
+    async (req: any, res) => {
+      try {
+        const userId = req.user?.claims?.sub;
+        const workoutId = parseInt(req.params.id);
+        
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
 
-      console.log("Updating workout data:", JSON.stringify(req.body, null, 2));
-      
-      const { workout: workoutData, sets: setsData } = req.body;
+        // Sanitize input data
+        const sanitizedBody = sanitizeInput(req.body);
+        console.log("Updating workout data:", JSON.stringify(sanitizedBody, null, 2));
+        
+        const { workout: workoutData, sets: setsData } = sanitizedBody;
       
       // Update workout
       const workout = await storage.updateWorkout(workoutId, {
