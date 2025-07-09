@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2, Minus, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -16,13 +16,14 @@ import { apiRequest } from "@/lib/queryClient";
 
 interface SetData {
   setNumber: number;
-  weight: string;
-  reps: string;
+  weight: number;
+  reps: number;
   powerBelt: boolean;
   buttUp: boolean;
   assistance: boolean;
   failed: boolean;
   notes: string;
+  showNotes: boolean;
 }
 
 interface RecordWorkoutProps {
@@ -42,23 +43,25 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
   const [sets, setSets] = useState<SetData[]>([
     {
       setNumber: 1,
-      weight: '65',
-      reps: '5',
+      weight: 65,
+      reps: 5,
       powerBelt: false,
       buttUp: false,
       assistance: false,
       failed: false,
       notes: '',
+      showNotes: false,
     },
     {
       setNumber: 2,
-      weight: '65',
-      reps: '5',
+      weight: 65,
+      reps: 5,
       powerBelt: false,
       buttUp: false,
       assistance: false,
       failed: false,
       notes: '',
+      showNotes: false,
     },
   ]);
 
@@ -82,6 +85,54 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
     setWorkoutDate(now.toISOString().split('T')[0]);
     setWorkoutTime(now.toTimeString().slice(0, 5));
   }, []);
+
+  // Helper functions for tap-based controls
+  const updateSetWeight = (index: number, increment: boolean) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        const newWeight = increment ? set.weight + 5 : Math.max(0, set.weight - 5);
+        return { ...set, weight: newWeight };
+      }
+      return set;
+    }));
+  };
+
+  const updateSetReps = (index: number, increment: boolean) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        const newReps = increment ? set.reps + 1 : Math.max(0, set.reps - 1);
+        return { ...set, reps: newReps };
+      }
+      return set;
+    }));
+  };
+
+  const toggleSetNotes = (index: number) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        return { ...set, showNotes: !set.showNotes };
+      }
+      return set;
+    }));
+  };
+
+  const updateSetNotes = (index: number, notes: string) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        return { ...set, notes };
+      }
+      return set;
+    }));
+  };
+
+  const toggleSetOption = (index: number, option: keyof SetData) => {
+    setSets(prev => prev.map((set, i) => {
+      if (i === index) {
+        return { ...set, [option]: !set[option] };
+      }
+      return set;
+    }));
+  };
 
   const saveWorkoutMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -128,11 +179,11 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       return;
     }
 
-    const validSets = sets.filter(set => set.weight && set.reps);
+    const validSets = sets.filter(set => set.weight > 0 && set.reps > 0);
     if (validSets.length === 0) {
       toast({
         title: "Error",
-        description: "Please add at least one set",
+        description: "Please add at least one set with weight and reps",
         variant: "destructive",
       });
       return;
@@ -147,7 +198,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
       sets: validSets.map(set => ({
         setNumber: set.setNumber,
         weight: set.weight,
-        reps: parseInt(set.reps),
+        reps: set.reps,
         powerBelt: set.powerBelt,
         buttUp: set.buttUp,
         assistance: set.assistance,
@@ -162,13 +213,14 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
   const addSet = () => {
     const newSet: SetData = {
       setNumber: sets.length + 1,
-      weight: sets.length > 0 ? sets[sets.length - 1].weight : '65',
-      reps: sets.length > 0 ? sets[sets.length - 1].reps : '5',
+      weight: sets.length > 0 ? sets[sets.length - 1].weight : 65,
+      reps: sets.length > 0 ? sets[sets.length - 1].reps : 5,
       powerBelt: false,
       buttUp: false,
       assistance: false,
       failed: false,
       notes: '',
+      showNotes: false,
     };
     setSets([...sets, newSet]);
   };
@@ -185,11 +237,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
     }
   };
 
-  const updateSet = (index: number, field: keyof SetData, value: any) => {
-    const newSets = [...sets];
-    newSets[index] = { ...newSets[index], [field]: value };
-    setSets(newSets);
-  };
+
 
   if (authLoading) {
     return (
@@ -273,26 +321,15 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
 
       {/* Sets */}
       <section className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("record.sets.title", language)}
-          </h2>
-          <Button
-            onClick={addSet}
-            variant="outline"
-            size="sm"
-            className="border-coral text-coral hover:bg-coral hover:text-white"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            {t("record.sets.add", language)}
-          </Button>
-        </div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          {t("record.sets.title", language)}
+        </h2>
 
         <div className="space-y-4">
           {sets.map((set, index) => (
             <Card key={index} className="animate-in slide-in-from-top-2 duration-300">
               <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-gray-900">
                     {t("record.sets.set", language)} {set.setNumber}
                   </h3>
@@ -308,91 +345,151 @@ export default function RecordWorkout({ onBack, language, onLanguageChange }: Re
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
+                {/* Weight and Reps with tap controls */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  {/* Weight Control */}
                   <div>
-                    <Label>{t("record.sets.weight", language)}</Label>
-                    <Input
-                      type="number"
-                      step="0.5"
-                      value={set.weight}
-                      onChange={(e) => updateSet(index, 'weight', e.target.value)}
-                      className="focus:ring-coral focus:border-coral"
-                    />
+                    <Label className="text-sm text-gray-600 mb-2 block">
+                      {t("record.sets.weight", language)} (kg)
+                    </Label>
+                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3">
+                      <Button
+                        onClick={() => updateSetWeight(index, false)}
+                        size="sm"
+                        variant="outline"
+                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
+                      >
+                        <Minus className="w-5 h-5" />
+                      </Button>
+                      <div className="mx-4 min-w-[60px] text-center">
+                        <span className="text-2xl font-bold text-gray-900">
+                          {set.weight}
+                        </span>
+                        <div className="text-xs text-gray-500">-5kg / +5kg</div>
+                      </div>
+                      <Button
+                        onClick={() => updateSetWeight(index, true)}
+                        size="sm"
+                        variant="outline"
+                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </Button>
+                    </div>
                   </div>
+
+                  {/* Reps Control */}
                   <div>
-                    <Label>{t("record.sets.reps", language)}</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={set.reps}
-                      onChange={(e) => updateSet(index, 'reps', e.target.value)}
-                      className="focus:ring-coral focus:border-coral"
-                    />
+                    <Label className="text-sm text-gray-600 mb-2 block">
+                      {t("record.sets.reps", language)}
+                    </Label>
+                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3">
+                      <Button
+                        onClick={() => updateSetReps(index, false)}
+                        size="sm"
+                        variant="outline"
+                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
+                      >
+                        <Minus className="w-5 h-5" />
+                      </Button>
+                      <div className="mx-4 min-w-[60px] text-center">
+                        <span className="text-2xl font-bold text-gray-900">
+                          {set.reps}
+                        </span>
+                        <div className="text-xs text-gray-500">-1 / +1</div>
+                      </div>
+                      <Button
+                        onClick={() => updateSetReps(index, true)}
+                        size="sm"
+                        variant="outline"
+                        className="h-12 w-12 rounded-full border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white active:scale-95 transition-transform"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`powerBelt-${index}`}
-                      checked={set.powerBelt}
-                      onCheckedChange={(checked) => updateSet(index, 'powerBelt', checked)}
-                    />
-                    <Label htmlFor={`powerBelt-${index}`} className="text-sm">
-                      {t("record.sets.powerBelt", language)}
-                    </Label>
-                  </div>
+                {/* Options */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <Button
+                    onClick={() => toggleSetOption(index, 'powerBelt')}
+                    variant={set.powerBelt ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                  >
+                    {t("record.sets.powerBelt", language)}
+                  </Button>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`buttUp-${index}`}
-                      checked={set.buttUp}
-                      onCheckedChange={(checked) => updateSet(index, 'buttUp', checked)}
-                    />
-                    <Label htmlFor={`buttUp-${index}`} className="text-sm">
-                      {t("record.sets.buttUp", language)}
-                    </Label>
-                  </div>
+                  <Button
+                    onClick={() => toggleSetOption(index, 'buttUp')}
+                    variant={set.buttUp ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                  >
+                    {t("record.sets.buttUp", language)}
+                  </Button>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`assistance-${index}`}
-                      checked={set.assistance}
-                      onCheckedChange={(checked) => updateSet(index, 'assistance', checked)}
-                    />
-                    <Label htmlFor={`assistance-${index}`} className="text-sm">
-                      {t("record.sets.assistance", language)}
-                    </Label>
-                  </div>
+                  <Button
+                    onClick={() => toggleSetOption(index, 'assistance')}
+                    variant={set.assistance ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral hover:bg-red-500' : 'hover:bg-coral hover:text-white'}`}
+                  >
+                    {t("record.sets.assistance", language)}
+                  </Button>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`failed-${index}`}
-                      checked={set.failed}
-                      onCheckedChange={(checked) => updateSet(index, 'failed', checked)}
-                    />
-                    <Label htmlFor={`failed-${index}`} className="text-sm">
-                      {t("record.sets.failed", language)}
-                    </Label>
-                  </div>
+                  <Button
+                    onClick={() => toggleSetOption(index, 'failed')}
+                    variant={set.failed ? "default" : "outline"}
+                    size="sm"
+                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-600 hover:text-white border-red-300'}`}
+                  >
+                    {t("record.sets.failed", language)}
+                  </Button>
                 </div>
 
-                <div className="mt-3">
-                  <Label htmlFor={`notes-${index}`}>
+                {/* Notes Toggle */}
+                <div className="border-t pt-3">
+                  <Button
+                    onClick={() => toggleSetNotes(index)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-600 hover:text-gray-900 p-0"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
                     {t("record.sets.notes", language)}
-                  </Label>
-                  <Textarea
-                    id={`notes-${index}`}
-                    rows={2}
-                    value={set.notes}
-                    onChange={(e) => updateSet(index, 'notes', e.target.value)}
-                    placeholder="How did this set feel?"
-                    className="focus:ring-coral focus:border-coral"
-                  />
+                    {set.showNotes ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
+                  </Button>
+                  
+                  {set.showNotes && (
+                    <div className="mt-2 animate-in slide-in-from-top-2 duration-200">
+                      <Textarea
+                        rows={2}
+                        value={set.notes}
+                        onChange={(e) => updateSetNotes(index, e.target.value)}
+                        placeholder="How did this set feel?"
+                        className="focus:ring-coral focus:border-coral"
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Add Set Button */}
+        <div className="mt-4">
+          <Button
+            onClick={addSet}
+            variant="outline"
+            size="lg"
+            className="w-full border-coral text-coral hover:bg-coral hover:text-white py-4"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            {t("record.sets.add", language)}
+          </Button>
         </div>
       </section>
 
