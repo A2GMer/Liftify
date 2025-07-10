@@ -146,7 +146,7 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">
-          {selectedChart === 'volume' ? t("home.chart.title", language) : '推定1RM推移'}
+          {selectedChart === 'volume' ? t("home.chart.title", language) : t("home.chart.1rmHistory", language)}
         </h2>
         <div className="flex gap-2">
           <Button
@@ -154,14 +154,14 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
             size="sm"
             onClick={() => setSelectedChart('volume')}
           >
-            ボリューム
+            {t("home.chart.volumeBtn", language)}
           </Button>
           <Button
             variant={selectedChart === '1rm' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSelectedChart('1rm')}
           >
-            推定1RM
+            {t("home.chart.1rmBtn", language)}
           </Button>
         </div>
       </div>
