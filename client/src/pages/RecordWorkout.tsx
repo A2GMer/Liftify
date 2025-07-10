@@ -443,10 +443,6 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed top-4 left-4 z-50">
-        <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} />
-      </div>
-      
       {/* Header */}
       <header className="bg-black text-white p-4 sticky top-0 z-40">
         <div className="flex justify-between items-center">
