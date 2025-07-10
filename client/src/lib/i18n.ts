@@ -354,10 +354,6 @@ export const translations = {
     "subscribe.alreadySubscribedDesc": "Vous avez déjà ce plan",
     "subscribe.freeFeature1": "Données des 30 derniers jours",
     "subscribe.freeFeature2": "Statistiques de base",
-    "subscribe.proFeature1": "Stockage de données illimité",
-    "subscribe.proFeature2": "Graphiques d'analyse avancée",
-    "subscribe.proFeature3": "Exportation de données",
-    "subscribe.proFeature4": "Fonctions de marquage",
     "subscribe.downgradeSuccess": "Rétrogradation Réussie",
     "subscribe.downgradeSuccessDesc": "Vous avez été rétrogradé vers le plan Gratuit",
     
@@ -487,10 +483,6 @@ export const translations = {
     "subscribe.alreadySubscribedDesc": "Sie haben bereits diesen Plan",
     "subscribe.freeFeature1": "Daten der letzten 30 Tage",
     "subscribe.freeFeature2": "Grundlegende Statistiken",
-    "subscribe.proFeature1": "Unbegrenzter Datenspeicher",
-    "subscribe.proFeature2": "Erweiterte Analyse-Diagramme",
-    "subscribe.proFeature3": "Datenexport",
-    "subscribe.proFeature4": "Tagging-Funktionen",
     "subscribe.downgradeSuccess": "Downgrade Erfolgreich",
     "subscribe.downgradeSuccessDesc": "Sie wurden zum kostenlosen Plan herabgestuft",
     
