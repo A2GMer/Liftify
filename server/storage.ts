@@ -491,10 +491,51 @@ export class DatabaseStorage implements IStorage {
       }
     });
 
+    // Calculate monthly gain (last 30 days vs previous 30 days)
+    let monthlyGain = 0;
+    if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
+      // For free users, we can only calculate gain within the 30-day data window
+      // Since they don't have historical data beyond 30 days, monthly gain will be 0
+      monthlyGain = 0;
+    } else {
+      // For paid users, calculate actual monthly gain
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+      
+      // Get recent max (last 30 days)
+      const [recentMax] = await db
+        .select({ max: sql<number>`MAX(${sets.weight})` })
+        .from(sets)
+        .innerJoin(workouts, eq(sets.workoutId, workouts.id))
+        .where(
+          and(
+            eq(workouts.userId, userId),
+            sql`${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`
+          )
+        );
+      
+      // Get previous max (30-60 days ago)
+      const [previousMax] = await db
+        .select({ max: sql<number>`MAX(${sets.weight})` })
+        .from(sets)
+        .innerJoin(workouts, eq(sets.workoutId, workouts.id))
+        .where(
+          and(
+            eq(workouts.userId, userId),
+            sql`${workouts.date} >= ${sixtyDaysAgo.toISOString().split('T')[0]}`,
+            sql`${workouts.date} < ${thirtyDaysAgo.toISOString().split('T')[0]}`
+          )
+        );
+      
+      const recentMaxWeight = recentMax?.max || 0;
+      const previousMaxWeight = previousMax?.max || 0;
+      monthlyGain = Math.max(0, recentMaxWeight - previousMaxWeight);
+    }
+
     return {
       currentMax: maxWeight?.max || 0,
       thisWeekWorkouts: thisWeekCount?.count || 0,
-      monthlyGain: 5, // Placeholder calculation
+      monthlyGain: monthlyGain,
       totalVolume: totalVol?.total || 0,
       estimated1RM: Math.round(highest1RM),
     };

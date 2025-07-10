@@ -156,6 +156,8 @@ Changelog:
 - July 09, 2025. Added language-specific Stripe product ID management system for multi-language pricing support
 - July 09, 2025. Implemented comprehensive language-specific pricing display system with dynamic currency formatting (¥500 JP, $2.99 EN, 2,99€ FR/DE)
 - July 09, 2025. Added production language-specific Pro product IDs: JA (prod_SeFmbBUb4FV0a4), EN (prod_SeJg6G4ndBDDjH), FR/DE (prod_SeJhEW6uDfGDxb)
+- July 10, 2025. Fixed timezone issue in RecordWorkout date/time initialization using local timezone instead of UTC
+- July 10, 2025. Fixed monthlyGain statistic showing hardcoded "5kg" for new users - now calculates proper gain from workout data (0 for new users, actual comparison for users with historical data)
 ```
 
 ## User Preferences
