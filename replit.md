@@ -159,6 +159,7 @@ Changelog:
 - July 10, 2025. Fixed timezone issue in RecordWorkout date/time initialization using local timezone instead of UTC
 - July 10, 2025. Fixed monthlyGain statistic showing hardcoded "5kg" for new users - now calculates proper gain from workout data (0 for new users, actual comparison for users with historical data)
 - July 10, 2025. Restored language selection functionality across all pages (Home, RecordWorkout, MyPage, Landing, Subscribe) with consistent positioning and improved styling
+- July 10, 2025. Fixed French and German translation issues by removing duplicate keys in i18n.ts and converting Landing page hardcoded language conditions to translation key system
 ```
 
 ## User Preferences

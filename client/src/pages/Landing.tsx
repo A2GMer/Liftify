@@ -49,18 +49,15 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
         
         <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-            {language === 'ja' ? 'ベンチプレスを' : 'Perfect Your'}
+            {t("landing.heroTitle", language)}
             <br />
             <span className="text-gray-200">
-              {language === 'ja' ? '極める' : 'Bench Press'}
+              {t("landing.heroTitleSecond", language)}
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-            {language === 'ja' 
-              ? 'タップ操作だけで記録。データで成長を可視化。科学的アプローチで限界突破。'
-              : 'Track with taps. Visualize growth with data. Break limits with science.'
-            }
+            {t("landing.heroSubtitle", language)}
           </p>
           
           <Button 
@@ -68,7 +65,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
             size="lg"
             className="bg-white text-black hover:bg-gray-100 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 rounded-full shadow-2xl backdrop-blur-sm"
           >
-            {language === 'ja' ? 'トレーニングを始める' : 'Start Training'}
+            {t("landing.startTraining", language)}
           </Button>
         </div>
       </section>
@@ -77,16 +74,10 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            {language === 'ja' 
-              ? '従来の記録方法では限界がある' 
-              : 'Traditional tracking holds you back'
-            }
+            {t("landing.problemTitle", language)}
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {language === 'ja'
-              ? 'ジムでスマホを取り出し、アプリを開いて、重量と回数を入力。この繰り返しが集中力を削ぎ、トレーニングの質を下げている。'
-              : 'Pulling out your phone, opening apps, typing weights and reps. This constant interruption breaks focus and reduces training quality.'
-            }
+            {t("landing.problemDesc", language)}
           </p>
         </div>
       </section>
@@ -95,7 +86,7 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gray-900">
-            {language === 'ja' ? 'Liftifyの3つの強み' : 'Three Core Strengths'}
+            {t("landing.strengthsTitle", language)}
           </h2>
           
           <div className="grid md:grid-cols-3 gap-12">
@@ -105,13 +96,10 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
                 <Smartphone className="w-10 h-10" />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">
-                {language === 'ja' ? '極限まで減らした入力操作' : 'Minimal Input Operations'}
+                {t("landing.strength1Title", language)}
               </h3>
               <p className="text-gray-600 text-lg leading-relaxed">
-                {language === 'ja'
-                  ? 'タップのみで重量・回数を調整。文字入力は一切不要。集中力を維持したまま、素早く記録できる。'
-                  : 'Adjust weights and reps with simple taps. No typing required. Maintain focus while recording quickly.'
-                }
+                {t("landing.strength1Desc", language)}
               </p>
             </div>
 
@@ -121,13 +109,10 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
                 <TrendingUp className="w-10 h-10" />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">
-                {language === 'ja' ? 'ビジュアル化された記録追跡' : 'Visual Progress Tracking'}
+                {t("landing.strength2Title", language)}
               </h3>
               <p className="text-gray-600 text-lg leading-relaxed">
-                {language === 'ja'
-                  ? 'グラフで成長を一目で確認。1RM推定値の変化も可視化。モチベーション維持に最適。'
-                  : 'See your growth at a glance with charts. Visualize 1RM estimates over time. Perfect for staying motivated.'
-                }
+                {t("landing.strength2Desc", language)}
               </p>
             </div>
 
@@ -137,13 +122,10 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
                 <Activity className="w-10 h-10" />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">
-                {language === 'ja' ? 'ボリューム量計測による定量的記録' : 'Quantitative Volume Tracking'}
+                {t("landing.strength3Title", language)}
               </h3>
               <p className="text-gray-600 text-lg leading-relaxed">
-                {language === 'ja'
-                  ? '総ボリューム（重量×回数）を自動計算。科学的根拠に基づいた定量的なトレーニング分析。'
-                  : 'Automatic volume calculation (weight × reps). Evidence-based quantitative training analysis.'
-                }
+                {t("landing.strength3Desc", language)}
               </p>
             </div>
           </div>
