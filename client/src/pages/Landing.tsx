@@ -21,8 +21,8 @@ export default function Landing({ onGetStarted, language, onLanguageChange }: La
         <div className="flex items-center space-x-3">
           <img src={logoWhitePath} alt="Liftify" className="h-12 w-auto" />
         </div>
-        <div className="absolute top-0 right-0 p-4">
-          <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} showSignOut={false} />
+        <div className="absolute top-0 left-0 p-4 ml-16">
+          <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} />
         </div>
       </nav>
       

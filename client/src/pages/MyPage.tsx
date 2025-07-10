@@ -183,7 +183,7 @@ export default function MyPage({ onBack, language, onLanguageChange }: MyPagePro
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 left-4 z-50">
         <TopNav currentLanguage={language} onLanguageChange={onLanguageChange} />
       </div>
       

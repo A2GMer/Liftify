@@ -16,19 +16,17 @@ export function LanguageSwitcher({ currentLanguage, onLanguageChange }: Language
   ];
 
   return (
-    <div className="fixed top-4 right-4 z-50">
-      <Select value={currentLanguage} onValueChange={onLanguageChange}>
-        <SelectTrigger className="w-40 bg-black text-white border-gray-600">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {languages.map((lang) => (
-            <SelectItem key={lang.code} value={lang.code}>
-              {lang.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={currentLanguage} onValueChange={onLanguageChange}>
+      <SelectTrigger className="w-40 bg-black/80 backdrop-blur-sm text-white border-gray-600 hover:bg-black/90 transition-colors">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {languages.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code}>
+            {lang.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
