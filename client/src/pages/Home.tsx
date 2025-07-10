@@ -165,7 +165,7 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
                 </div>
               )}
               <div className="text-sm text-gray-600">
-                想定1RM
+                {t("home.stats.estimated1RM", language)}
               </div>
             </CardContent>
           </Card>
@@ -200,10 +200,10 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
           ) : workouts?.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-gray-500 mb-4">No workouts yet. Start tracking your progress!</p>
+                <p className="text-gray-500 mb-4">{t("home.noWorkouts", language)}</p>
                 <Button onClick={onNewWorkout} className="bg-coral hover:bg-red-500">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add First Workout
+                  {t("home.addFirstWorkout", language)}
                 </Button>
               </CardContent>
             </Card>
