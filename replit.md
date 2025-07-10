@@ -162,6 +162,7 @@ Changelog:
 - July 10, 2025. Fixed French and German translation issues by removing duplicate keys in i18n.ts and converting Landing page hardcoded language conditions to translation key system
 - July 10, 2025. Added multi-language support for "想定1RM" and "No workouts yet" text on Home page for all languages (EN/JA/FR/DE)
 - July 10, 2025. Added multi-language support for WorkoutChart component including chart titles and button labels for all languages (EN/JA/FR/DE)
+- July 10, 2025. Completed comprehensive multi-language support for RecordWorkout page including set options (belt, crushed, form/rep focused, cheating), evaluation labels, and placeholder text for all languages (EN/JA/FR/DE)
 ```
 
 ## User Preferences

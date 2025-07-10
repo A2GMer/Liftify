@@ -635,7 +635,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
-                    ベルト
+                    {t("record.sets.belt", language)}
                   </Button>
                   
                   <Button
@@ -662,7 +662,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 text-white' : '!bg-white border border-red-300'}`}
                   >
-                    つぶれた
+                    {t("record.sets.crushed", language)}
                   </Button>
                   
                   <Button
@@ -671,7 +671,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 text-white' : '!bg-white border border-blue-300'}`}
                   >
-                    効き重視
+                    {t("record.sets.formFocused", language)}
                   </Button>
                   
                   <Button
@@ -680,7 +680,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 text-white' : '!bg-white border border-green-300'}`}
                   >
-                    回数重視
+                    {t("record.sets.repFocused", language)}
                   </Button>
                   
                   <Button
@@ -689,7 +689,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     size="sm"
                     className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 text-white' : '!bg-white border border-yellow-300'}`}
                   >
-                    チーティング
+                    {t("record.sets.cheating", language)}
                   </Button>
                 </div>
 
@@ -698,13 +698,13 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                   <div className="border-t pt-4 mb-4">
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <div className="text-sm font-medium text-yellow-800 mb-3">
-                        チーティング時の実際の重量・回数
+                        {t("record.cheating.title", language)}
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         {/* Cheating Weight Control */}
                         <div>
                           <Label className="text-sm text-yellow-700 mb-2 block">
-                            実際の重量 (kg)
+                            {t("record.cheating.actualWeight", language)}
                           </Label>
                           <div className="relative bg-white rounded-lg overflow-hidden border border-yellow-200">
                             {/* Background indicators */}
@@ -746,7 +746,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                         {/* Cheating Reps Control */}
                         <div>
                           <Label className="text-sm text-yellow-700 mb-2 block">
-                            実際の回数
+                            {t("record.cheating.actualReps", language)}
                           </Label>
                           <div className="relative bg-white rounded-lg overflow-hidden border border-yellow-200">
                             {/* Background indicators */}
@@ -808,7 +808,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                         rows={2}
                         value={set.notes}
                         onChange={(e) => updateSetNotes(index, sanitizeText(e.target.value))}
-                        placeholder="How did this set feel?"
+                        placeholder={t("record.notes.placeholder", language)}
                         className="focus:ring-coral focus:border-coral"
                         maxLength={500}
                       />
@@ -847,7 +847,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                 rows={3}
                 value={workoutNotes}
                 onChange={(e) => setWorkoutNotes(sanitizeText(e.target.value))}
-                placeholder="Overall thoughts about today's workout..."
+                placeholder={t("record.workoutNotes.placeholder", language)}
                 className="focus:ring-coral focus:border-coral"
                 maxLength={1000}
               />
@@ -856,7 +856,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
             {/* All Out Feeling Slider */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                オールアウト感覚 ({allOutFeeling[0]}/10)
+                {t("record.evaluation.allOut", language)} ({allOutFeeling[0]}/10)
               </Label>
               <Slider
                 value={allOutFeeling}
@@ -867,8 +867,8 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>余裕</span>
-                <span>限界</span>
+                <span>{t("record.evaluation.easy", language)}</span>
+                <span>{t("record.evaluation.limit", language)}</span>
               </div>
             </div>
           </CardContent>
