@@ -558,32 +558,12 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                       <div className="relative flex h-20">
                         <button
                           onClick={() => updateSetWeight(index, false)}
-                          onTouchStart={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fecaca';
-                            e.currentTarget.style.transform = 'scale(0.95)';
-                          }}
-                          onTouchEnd={(e) => {
-                            setTimeout(() => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.transform = '';
-                            }, 150);
-                          }}
-                          className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                          className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
                         >
                         </button>
                         <button
                           onClick={() => updateSetWeight(index, true)}
-                          onTouchStart={(e) => {
-                            e.currentTarget.style.backgroundColor = '#bbf7d0';
-                            e.currentTarget.style.transform = 'scale(0.95)';
-                          }}
-                          onTouchEnd={(e) => {
-                            setTimeout(() => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.transform = '';
-                            }, 150);
-                          }}
-                          className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                          className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
                         >
                         </button>
                       </div>
@@ -620,32 +600,12 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                       <div className="relative flex h-20">
                         <button
                           onClick={() => updateSetReps(index, false)}
-                          onTouchStart={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fecaca';
-                            e.currentTarget.style.transform = 'scale(0.95)';
-                          }}
-                          onTouchEnd={(e) => {
-                            setTimeout(() => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.transform = '';
-                            }, 150);
-                          }}
-                          className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                          className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
                         >
                         </button>
                         <button
                           onClick={() => updateSetReps(index, true)}
-                          onTouchStart={(e) => {
-                            e.currentTarget.style.backgroundColor = '#bbf7d0';
-                            e.currentTarget.style.transform = 'scale(0.95)';
-                          }}
-                          onTouchEnd={(e) => {
-                            setTimeout(() => {
-                              e.currentTarget.style.backgroundColor = '';
-                              e.currentTarget.style.transform = '';
-                            }, 150);
-                          }}
-                          className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                          className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
                         >
                         </button>
                       </div>
@@ -667,133 +627,63 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   <Button
                     onClick={() => toggleSetOption(index, 'powerBelt')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.powerBelt ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.belt", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'buttUp')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.buttUp ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.buttUp", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'assistance')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.assistance ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.assistance", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'failed')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.failed ? 'bg-red-600 text-white' : '!bg-white border border-red-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 text-white' : '!bg-white border border-red-300'}`}
                   >
                     {t("record.sets.crushed", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'formFocused')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.formFocused ? 'bg-blue-600 text-white' : '!bg-white border border-blue-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 text-white' : '!bg-white border border-blue-300'}`}
                   >
                     {t("record.sets.formFocused", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleSetOption(index, 'repFocused')}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 ${set.repFocused ? 'bg-green-600 text-white' : '!bg-white border border-green-300'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 text-white' : '!bg-white border border-green-300'}`}
                   >
                     {t("record.sets.repFocused", language)}
                   </Button>
                   
                   <Button
                     onClick={() => toggleCheating(index)}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.backgroundColor = '#374151';
-                      e.currentTarget.style.transform = 'scale(0.95)';
-                    }}
-                    onTouchEnd={(e) => {
-                      setTimeout(() => {
-                        e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.transform = '';
-                      }, 150);
-                    }}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 col-span-2 ${set.cheating ? 'bg-yellow-600 text-white' : '!bg-white border border-yellow-300'}`}
+                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 text-white' : '!bg-white border border-yellow-300'}`}
                   >
                     {t("record.sets.cheating", language)}
                   </Button>
@@ -827,32 +717,12 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                             <div className="relative flex h-16">
                               <button
                                 onClick={() => updateCheatingWeight(index, false)}
-                                onTouchStart={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#fecaca';
-                                  e.currentTarget.style.transform = 'scale(0.95)';
-                                }}
-                                onTouchEnd={(e) => {
-                                  setTimeout(() => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.transform = '';
-                                  }, 150);
-                                }}
-                                className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                                className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
                               >
                               </button>
                               <button
                                 onClick={() => updateCheatingWeight(index, true)}
-                                onTouchStart={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#bbf7d0';
-                                  e.currentTarget.style.transform = 'scale(0.95)';
-                                }}
-                                onTouchEnd={(e) => {
-                                  setTimeout(() => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.transform = '';
-                                  }, 150);
-                                }}
-                                className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                                className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
                               >
                               </button>
                             </div>
@@ -889,32 +759,12 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                             <div className="relative flex h-16">
                               <button
                                 onClick={() => updateCheatingReps(index, false)}
-                                onTouchStart={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#fecaca';
-                                  e.currentTarget.style.transform = 'scale(0.95)';
-                                }}
-                                onTouchEnd={(e) => {
-                                  setTimeout(() => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.transform = '';
-                                  }, 150);
-                                }}
-                                className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                                className="flex-1 flex items-center justify-center active:bg-red-100 transition-colors touch-manipulation"
                               >
                               </button>
                               <button
                                 onClick={() => updateCheatingReps(index, true)}
-                                onTouchStart={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#bbf7d0';
-                                  e.currentTarget.style.transform = 'scale(0.95)';
-                                }}
-                                onTouchEnd={(e) => {
-                                  setTimeout(() => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.transform = '';
-                                  }, 150);
-                                }}
-                                className="flex-1 flex items-center justify-center transition-all duration-150 touch-manipulation"
+                                className="flex-1 flex items-center justify-center active:bg-green-100 transition-colors touch-manipulation"
                               >
                               </button>
                             </div>
