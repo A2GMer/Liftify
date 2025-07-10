@@ -545,7 +545,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                   {/* Weight Control */}
                   <div>
                     <Label className="text-sm text-gray-600 mb-2 block">
-                      {t("record.sets.weight", language)} (kg)
+                      {t("record.sets.weight", language)}
                     </Label>
                     <div className="relative bg-gray-50 rounded-lg overflow-hidden">
                       {/* Background indicators */}
