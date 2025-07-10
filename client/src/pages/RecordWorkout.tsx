@@ -629,7 +629,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'powerBelt')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.powerBelt ? 'bg-coral text-white active:bg-coral' : '!bg-white border border-gray-300 active:bg-coral active:text-white active:border-coral'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.powerBelt ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.belt", language)}
                   </Button>
@@ -638,7 +638,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'buttUp')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.buttUp ? 'bg-coral text-white active:bg-coral' : '!bg-white border border-gray-300 active:bg-coral active:text-white active:border-coral'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.buttUp ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.buttUp", language)}
                   </Button>
@@ -647,7 +647,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'assistance')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.assistance ? 'bg-coral text-white active:bg-coral' : '!bg-white border border-gray-300 active:bg-coral active:text-white active:border-coral'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.assistance ? 'bg-coral text-white' : '!bg-white border border-gray-300'}`}
                   >
                     {t("record.sets.assistance", language)}
                   </Button>
@@ -656,7 +656,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'failed')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.failed ? 'bg-red-600 text-white active:bg-red-600' : '!bg-white border border-red-300 active:bg-red-600 active:text-white active:border-red-600'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.failed ? 'bg-red-600 text-white' : '!bg-white border border-red-300'}`}
                   >
                     {t("record.sets.crushed", language)}
                   </Button>
@@ -665,7 +665,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'formFocused')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.formFocused ? 'bg-blue-600 text-white active:bg-blue-600' : '!bg-white border border-blue-300 active:bg-blue-600 active:text-white active:border-blue-600'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.formFocused ? 'bg-blue-600 text-white' : '!bg-white border border-blue-300'}`}
                   >
                     {t("record.sets.formFocused", language)}
                   </Button>
@@ -674,7 +674,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleSetOption(index, 'repFocused')}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 ${set.repFocused ? 'bg-green-600 text-white active:bg-green-600' : '!bg-white border border-green-300 active:bg-green-600 active:text-white active:border-green-600'}`}
+                    className={`py-3 active:scale-95 transition-transform ${set.repFocused ? 'bg-green-600 text-white' : '!bg-white border border-green-300'}`}
                   >
                     {t("record.sets.repFocused", language)}
                   </Button>
@@ -683,7 +683,7 @@ export default function RecordWorkout({ onBack, language, onLanguageChange, edit
                     onClick={() => toggleCheating(index)}
                     variant="ghost"
                     size="sm"
-                    className={`py-3 transition-all duration-150 active:scale-98 col-span-2 ${set.cheating ? 'bg-yellow-600 text-white active:bg-yellow-600' : '!bg-white border border-yellow-300 active:bg-yellow-600 active:text-white active:border-yellow-600'}`}
+                    className={`py-3 active:scale-95 transition-transform col-span-2 ${set.cheating ? 'bg-yellow-600 text-white' : '!bg-white border border-yellow-300'}`}
                   >
                     {t("record.sets.cheating", language)}
                   </Button>
