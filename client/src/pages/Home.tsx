@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { TopNav } from "@/components/TopNav";
 import { UserMenu } from "@/components/UserMenu";
@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, Trash2 } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { WorkoutWithSets } from "@shared/schema";
 import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
@@ -52,6 +53,42 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
     enabled: isAuthenticated,
     retry: false,
   });
+
+  // Delete workout mutation
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: async (workoutId: number) => {
+      const response = await apiRequest(`/api/workouts/${workoutId}`, {
+        method: 'DELETE',
+      });
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Workout deleted successfully",
+      });
+      // Invalidate and refetch queries
+      queryClient.invalidateQueries({ queryKey: ['/api/workouts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/user-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/daily-volume'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/1rm-history'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete workout. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteWorkout = (workoutId: number, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card click from triggering
+    
+    if (window.confirm(t("home.deleteConfirm", language))) {
+      deleteWorkoutMutation.mutate(workoutId);
+    }
+  };
 
 
 
@@ -220,9 +257,9 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
 
               return (
                 <Card key={workout.id} className="cursor-pointer hover:bg-gray-50 transition-colors">
-                  <CardContent className="p-4" onClick={() => onEditWorkout(workout.id)}>
+                  <CardContent className="p-4">
                     <div className="flex justify-between items-center">
-                      <div>
+                      <div className="flex-1" onClick={() => onEditWorkout(workout.id)}>
                         <div className="font-semibold text-gray-900">
                           {avgWeight.toFixed(1)}kg × {avgReps.toFixed(0)} × {totalSets}
                         </div>
@@ -234,8 +271,19 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
                           })}, {workout.time}
                         </div>
                       </div>
-                      <div className="text-coral font-bold">
-                        {Math.round(totalVolume)}kg
+                      <div className="flex items-center gap-3">
+                        <div className="text-coral font-bold">
+                          {Math.round(totalVolume)}kg
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => handleDeleteWorkout(workout.id, e)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 h-8 w-8"
+                          disabled={deleteWorkoutMutation.isPending}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

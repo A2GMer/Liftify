@@ -27,6 +27,7 @@ export interface IStorage {
   // Workout operations
   createWorkout(workout: InsertWorkout): Promise<Workout>;
   updateWorkout(id: number, workout: InsertWorkout): Promise<Workout>;
+  deleteWorkout(id: number): Promise<void>;
   getWorkoutsByUserId(userId: string): Promise<WorkoutWithSets[]>;
   getWorkoutById(id: number): Promise<WorkoutWithSets | undefined>;
   
@@ -238,6 +239,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(workouts.id, id))
       .returning();
     return updatedWorkout;
+  }
+
+  async deleteWorkout(id: number): Promise<void> {
+    // First delete all sets associated with this workout
+    await this.deleteSetsByWorkoutId(id);
+    
+    // Then delete the workout itself
+    await db
+      .delete(workouts)
+      .where(eq(workouts.id, id));
   }
 
   async getWorkoutsByUserId(userId: string): Promise<WorkoutWithSets[]> {
