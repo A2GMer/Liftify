@@ -58,9 +58,7 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
   const deleteWorkoutMutation = useMutation({
     mutationFn: async (workoutId: number) => {
       console.log("Deleting workout:", workoutId);
-      const response = await apiRequest(`/api/workouts/${workoutId}`, {
-        method: 'DELETE',
-      });
+      const response = await apiRequest('DELETE', `/api/workouts/${workoutId}`);
       console.log("Delete response:", response);
       return response;
     },
