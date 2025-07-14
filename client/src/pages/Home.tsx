@@ -57,9 +57,11 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
   // Delete workout mutation
   const deleteWorkoutMutation = useMutation({
     mutationFn: async (workoutId: number) => {
+      console.log("Deleting workout:", workoutId);
       const response = await apiRequest(`/api/workouts/${workoutId}`, {
         method: 'DELETE',
       });
+      console.log("Delete response:", response);
       return response;
     },
     onSuccess: () => {
@@ -74,9 +76,10 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/1rm-history'] });
     },
     onError: (error) => {
+      console.error("Delete error:", error);
       toast({
         title: "Error",
-        description: "Failed to delete workout. Please try again.",
+        description: `Failed to delete workout: ${error.message}`,
         variant: "destructive",
       });
     },

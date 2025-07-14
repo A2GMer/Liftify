@@ -234,27 +234,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const userId = req.user?.claims?.sub;
         const workoutId = parseInt(req.params.id);
         
+        console.log(`Delete request - User: ${userId}, Workout ID: ${workoutId}`);
+        
         if (!userId) {
+          console.error("Delete failed: User ID not found");
           return res.status(401).json({ message: "User ID not found" });
         }
 
         // First check if the workout exists and belongs to the user
         const workout = await storage.getWorkoutById(workoutId);
         if (!workout) {
+          console.error(`Delete failed: Workout ${workoutId} not found`);
           return res.status(404).json({ message: "Workout not found" });
         }
         
         if (workout.userId !== userId) {
+          console.error(`Delete failed: Workout ${workoutId} belongs to user ${workout.userId}, not ${userId}`);
           return res.status(403).json({ message: 'Unauthorized' });
         }
 
         // Delete the workout
+        console.log(`Deleting workout ${workoutId} for user ${userId}`);
         await storage.deleteWorkout(workoutId);
         
+        console.log(`Successfully deleted workout ${workoutId}`);
         res.json({ message: "Workout deleted successfully" });
       } catch (error) {
         console.error("Error deleting workout:", error);
-        res.status(500).json({ message: "Failed to delete workout" });
+        res.status(500).json({ message: "Failed to delete workout", error: error.message });
       }
     });
 
