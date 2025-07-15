@@ -165,6 +165,7 @@ Changelog:
 - July 10, 2025. Completed comprehensive multi-language support for RecordWorkout page including set options (belt, crushed, form/rep focused, cheating), evaluation labels, and placeholder text for all languages (EN/JA/FR/DE)
 - July 10, 2025. Fixed weight label duplication bug by removing redundant "(kg)" since translation keys already contain the unit
 - July 10, 2025. Hidden language selection on RecordWorkout page for better UX focus during workout registration
+- July 15, 2025. Created comprehensive README.md for GitHub repository with multi-language support (English, Japanese, German, French) including project overview, tech stack, installation instructions, and configuration details
 ```
 
 ## User Preferences
