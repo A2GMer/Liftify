@@ -169,6 +169,8 @@ Changelog:
 - August 14, 2025. Modified graph horizontal axis to show last 1 month (30 days) of data and exclude days without training from display
 - August 14, 2025. Changed free plan limitation from "last 30 days" to "latest 30 workouts" across all backend queries, frontend translations (EN/JA/FR/DE), and UI displays
 - August 14, 2025. Updated statistics display: "this week" to "total workouts" and "monthly gain" to "volume change" (latest vs previous workout volume difference)
+- August 14, 2025. Implemented volume change calculation showing difference between latest and previous workout volumes with proper sign display
+- August 14, 2025. Updated Japanese UI labels: "総回数" to "累計トレーニング回数" and "ボリューム変化" to "前回比" with corresponding translations for all languages
 ```
 
 ## User Preferences
