@@ -120,7 +120,7 @@ export const translations = {
     "subscribe.downgrade": "Downgrade",
     "subscribe.alreadySubscribed": "Already Subscribed",
     "subscribe.alreadySubscribedDesc": "You already have this plan",
-    "subscribe.freeFeature1": "Last 30 days of data",
+    "subscribe.freeFeature1": "Latest 30 workouts",
     "subscribe.freeFeature2": "Basic statistics",
     "subscribe.proFeature1": "Unlimited data storage",
     "subscribe.proFeature2": "Advanced analytics charts",
@@ -134,7 +134,7 @@ export const translations = {
     "subscribe.downgradeSuccessDesc": "You have been downgraded to the Free plan",
     
     // Free Plan Restrictions
-    "freeplan.dataRetentionNotice": "Free plan users can only view the last 30 days of data",
+    "freeplan.dataRetentionNotice": "Free plan users can only view the latest 30 workouts",
     "freeplan.upgradeToSeeMore": "Upgrade to Pro to see unlimited data",
     "subscribe.downgradeError": "Downgrade Failed",
     "subscribe.downgradeErrorDesc": "Failed to downgrade subscription. Please try again.",
@@ -282,7 +282,7 @@ export const translations = {
     "subscribe.downgrade": "ダウングレード",
     "subscribe.alreadySubscribed": "既に登録済み",
     "subscribe.alreadySubscribedDesc": "このプランには既に登録されています",
-    "subscribe.freeFeature1": "最新30日間のデータ",
+    "subscribe.freeFeature1": "最新30回のワークアウト",
     "subscribe.freeFeature2": "基本統計表示",
     "subscribe.proFeature1": "無制限データ保存",
     "subscribe.proFeature2": "高度な分析グラフ",
@@ -297,7 +297,7 @@ export const translations = {
     "subscribe.downgradeSuccessDesc": "Freeプランにダウングレードしました",
     
     // Free Plan Restrictions
-    "freeplan.dataRetentionNotice": "無料プランでは過去30日間のデータのみ表示されます",
+    "freeplan.dataRetentionNotice": "無料プランでは最新30回のワークアウトのみ表示されます",
     "freeplan.upgradeToSeeMore": "Proプランにアップグレードで無制限データを表示",
     "subscribe.downgradeError": "ダウングレード失敗",
     "subscribe.downgradeErrorDesc": "サブスクリプションのダウングレードに失敗しました。再度お試しください。",
@@ -454,13 +454,13 @@ export const translations = {
     "subscribe.downgrade": "Rétrograder",
     "subscribe.alreadySubscribed": "Déjà Abonné",
     "subscribe.alreadySubscribedDesc": "Vous avez déjà ce plan",
-    "subscribe.freeFeature1": "Données des 30 derniers jours",
+    "subscribe.freeFeature1": "30 derniers entraînements",
     "subscribe.freeFeature2": "Statistiques de base",
     "subscribe.downgradeSuccess": "Rétrogradation Réussie",
     "subscribe.downgradeSuccessDesc": "Vous avez été rétrogradé vers le plan Gratuit",
     
     // Free Plan Restrictions
-    "freeplan.dataRetentionNotice": "Les utilisateurs du plan gratuit ne peuvent voir que les 30 derniers jours",
+    "freeplan.dataRetentionNotice": "Les utilisateurs du plan gratuit ne peuvent voir que les 30 derniers entraînements",
     "freeplan.upgradeToSeeMore": "Passez au plan Pro pour voir des données illimitées",
     "subscribe.downgradeError": "Échec de la Rétrogradation",
     "subscribe.downgradeErrorDesc": "Échec de la rétrogradation de l'abonnement. Veuillez réessayer.",
@@ -617,13 +617,13 @@ export const translations = {
     "subscribe.downgrade": "Downgrade",
     "subscribe.alreadySubscribed": "Bereits Abonniert",
     "subscribe.alreadySubscribedDesc": "Sie haben bereits diesen Plan",
-    "subscribe.freeFeature1": "Daten der letzten 30 Tage",
+    "subscribe.freeFeature1": "Neueste 30 Trainings",
     "subscribe.freeFeature2": "Grundlegende Statistiken",
     "subscribe.downgradeSuccess": "Downgrade Erfolgreich",
     "subscribe.downgradeSuccessDesc": "Sie wurden zum kostenlosen Plan herabgestuft",
     
     // Free Plan Restrictions
-    "freeplan.dataRetentionNotice": "Kostenlose Nutzer können nur die letzten 30 Tage sehen",
+    "freeplan.dataRetentionNotice": "Kostenlose Nutzer können nur die neuesten 30 Trainings sehen",
     "freeplan.upgradeToSeeMore": "Upgrade zu Pro für unbegrenzte Daten",
     "subscribe.downgradeError": "Downgrade Fehlgeschlagen",
     "subscribe.downgradeErrorDesc": "Downgrade des Abonnements fehlgeschlagen. Bitte versuchen Sie es erneut.",

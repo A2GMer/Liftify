@@ -11,7 +11,7 @@ import {
   type WorkoutWithSets,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, lte, or } from "drizzle-orm";
+import { eq, desc, sql, and, lte, or, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -156,8 +156,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async cleanupFreeUserData(): Promise<void> {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
     // Get all free users
     const freeUsers = await db
       .select()
@@ -177,37 +175,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async cleanupFreeUserDataForUser(userId: string): Promise<void> {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
     try {
-      // Get workouts older than 30 days for this user
-      const oldWorkouts = await db
+      // Get all workouts for this user, ordered by date (newest first)
+      const allWorkouts = await db
         .select()
         .from(workouts)
-        .where(
-          and(
-            eq(workouts.userId, userId),
-            sql`${workouts.date} < ${thirtyDaysAgo.toISOString().split('T')[0]}`
-          )
-        );
+        .where(eq(workouts.userId, userId))
+        .orderBy(desc(workouts.date), desc(workouts.time));
       
-      if (oldWorkouts.length > 0) {
-        console.log(`Cleaning up ${oldWorkouts.length} old workouts for free user: ${userId}`);
+      // If user has more than 30 workouts, delete the excess (oldest ones)
+      if (allWorkouts.length > 30) {
+        const workoutsToDelete = allWorkouts.slice(30); // Keep only first 30 (newest)
+        
+        console.log(`Cleaning up ${workoutsToDelete.length} excess workouts for free user: ${userId}`);
         
         // Delete sets for old workouts
-        for (const workout of oldWorkouts) {
+        for (const workout of workoutsToDelete) {
           await db.delete(sets).where(eq(sets.workoutId, workout.id));
         }
         
         // Delete old workouts
+        const workoutIdsToDelete = workoutsToDelete.map(w => w.id);
         await db
           .delete(workouts)
-          .where(
-            and(
-              eq(workouts.userId, userId),
-              sql`${workouts.date} < ${thirtyDaysAgo.toISOString().split('T')[0]}`
-            )
-          );
+          .where(inArray(workouts.id, workoutIdsToDelete));
         
         console.log(`Successfully cleaned up data for free user: ${userId}`);
       }
@@ -252,25 +243,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getWorkoutsByUserId(userId: string): Promise<WorkoutWithSets[]> {
-    // Check if user is on free plan and apply 30-day limit
+    // Check if user is on free plan and apply 30-workout limit
     const user = await this.getUser(userId);
-    let workoutsQuery = db
-      .select()
-      .from(workouts)
-      .where(eq(workouts.userId, userId));
+    let userWorkouts;
     
-    // Apply 30-day limit for free users
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      workoutsQuery = workoutsQuery.where(
-        and(
-          eq(workouts.userId, userId),
-          sql`${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`
-        )
-      );
+      // For free users, limit to latest 30 workouts
+      userWorkouts = await db
+        .select()
+        .from(workouts)
+        .where(eq(workouts.userId, userId))
+        .orderBy(desc(workouts.date), desc(workouts.time))
+        .limit(30);
+    } else {
+      // For paid users, get all workouts
+      userWorkouts = await db
+        .select()
+        .from(workouts)
+        .where(eq(workouts.userId, userId))
+        .orderBy(desc(workouts.date), desc(workouts.time));
     }
-    
-    const userWorkouts = await workoutsQuery.orderBy(desc(workouts.date), desc(workouts.time));
 
     const workoutsWithSets: WorkoutWithSets[] = [];
     
@@ -323,19 +315,13 @@ export class DatabaseStorage implements IStorage {
 
   // Analytics
   async getDailyVolumeStats(userId: string, days: number): Promise<{ date: string; volume: number }[]> {
-    // Check if user is on free plan and apply 30-day limit
+    // Check if user is on free plan and apply 30-workout limit
     const user = await this.getUser(userId);
-    let whereCondition = eq(workouts.userId, userId);
+    let workoutLimit = days;
     
-    // Apply 30-day limit for free users
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      whereCondition = and(
-        eq(workouts.userId, userId),
-        sql`${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`
-      );
-      // Limit days to max 30 for free users
-      days = Math.min(days, 30);
+      // For free users, limit to latest 30 workouts total
+      workoutLimit = Math.min(days, 30);
     }
     
     const result = await db
@@ -345,10 +331,10 @@ export class DatabaseStorage implements IStorage {
       })
       .from(workouts)
       .innerJoin(sets, eq(workouts.id, sets.workoutId))
-      .where(whereCondition)
+      .where(eq(workouts.userId, userId))
       .groupBy(workouts.date)
       .orderBy(desc(workouts.date))
-      .limit(days);
+      .limit(workoutLimit);
 
     return result.map(row => ({
       date: row.date,
@@ -357,19 +343,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async get1RMHistory(userId: string, days: number): Promise<{ date: string; max1rm: number }[]> {
-    // Check if user is on free plan and apply 30-day limit
+    // Check if user is on free plan and apply 30-workout limit
     const user = await this.getUser(userId);
-    let whereCondition = eq(workouts.userId, userId);
+    let workoutLimit = days * 10; // Get more sets to process
     
-    // Apply 30-day limit for free users
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      whereCondition = and(
-        eq(workouts.userId, userId),
-        sql`${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`
-      );
-      // Limit days to max 30 for free users
-      days = Math.min(days, 30);
+      // For free users, limit to latest 30 workouts total
+      workoutLimit = Math.min(days, 30) * 10;
     }
     
     const result = await db
@@ -380,9 +360,9 @@ export class DatabaseStorage implements IStorage {
       })
       .from(workouts)
       .innerJoin(sets, eq(workouts.id, sets.workoutId))
-      .where(whereCondition)
+      .where(eq(workouts.userId, userId))
       .orderBy(desc(workouts.date))
-      .limit(days * 10); // Get more sets to process
+      .limit(workoutLimit);
 
     // Calculate 1RM for each set and group by date
     const groupedByDate = result.reduce((acc: { [key: string]: number[] }, row) => {
@@ -436,17 +416,28 @@ export class DatabaseStorage implements IStorage {
     totalVolume: number;
     estimated1RM: number;
   }> {
-    // Check if user is on free plan and apply 30-day limit
+    // Check if user is on free plan and apply 30-workout limit
     const user = await this.getUser(userId);
-    let whereCondition = eq(workouts.userId, userId);
+    let whereCondition;
+    let latest30Workouts: any[] = [];
     
-    // Apply 30-day limit for free users
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      whereCondition = and(
-        eq(workouts.userId, userId),
-        sql`${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`
-      );
+      // For free users, get latest 30 workouts
+      latest30Workouts = await db
+        .select({ id: workouts.id })
+        .from(workouts)
+        .where(eq(workouts.userId, userId))
+        .orderBy(desc(workouts.date), desc(workouts.time))
+        .limit(30);
+      
+      if (latest30Workouts.length > 0) {
+        const workoutIds = latest30Workouts.map(w => w.id);
+        whereCondition = inArray(workouts.id, workoutIds);
+      } else {
+        whereCondition = sql`1 = 0`; // No workouts found
+      }
+    } else {
+      whereCondition = eq(workouts.userId, userId);
     }
     
     // Get current max weight
@@ -456,11 +447,24 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(workouts, eq(sets.workoutId, workouts.id))
       .where(whereCondition);
 
-    // Get this week's workouts count (apply 30-day limit for free users)
-    let thisWeekWhereCondition = sql`${workouts.userId} = ${userId} AND ${workouts.date} >= DATE_TRUNC('week', CURRENT_DATE)`;
+    // Get this week's workouts count (apply 30-workout limit for free users)
+    let thisWeekWhereCondition;
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      thisWeekWhereCondition = sql`${workouts.userId} = ${userId} AND ${workouts.date} >= DATE_TRUNC('week', CURRENT_DATE) AND ${workouts.date} >= ${thirtyDaysAgo.toISOString().split('T')[0]}`;
+      // For free users, intersect with latest 30 workouts
+      if (latest30Workouts && latest30Workouts.length > 0) {
+        const workoutIds = latest30Workouts.map(w => w.id);
+        thisWeekWhereCondition = and(
+          inArray(workouts.id, workoutIds),
+          sql`${workouts.date} >= DATE_TRUNC('week', CURRENT_DATE)`
+        );
+      } else {
+        thisWeekWhereCondition = sql`1 = 0`; // No workouts found
+      }
+    } else {
+      thisWeekWhereCondition = and(
+        eq(workouts.userId, userId),
+        sql`${workouts.date} >= DATE_TRUNC('week', CURRENT_DATE)`
+      );
     }
     
     const [thisWeekCount] = await db
@@ -502,11 +506,11 @@ export class DatabaseStorage implements IStorage {
       }
     });
 
-    // Calculate monthly gain (last 30 days vs previous 30 days)
+    // Calculate monthly gain (latest vs previous workouts)
     let monthlyGain = 0;
     if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
-      // For free users, we can only calculate gain within the 30-day data window
-      // Since they don't have historical data beyond 30 days, monthly gain will be 0
+      // For free users, we can only calculate gain within the 30-workout data window
+      // Since they don't have historical data beyond 30 workouts, monthly gain will be 0
       monthlyGain = 0;
     } else {
       // For paid users, calculate actual monthly gain
