@@ -48,16 +48,26 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
       let chartData, labels;
       
       if (selectedChart === 'volume') {
+        // Sort data by date (oldest to newest for left-to-right display)
+        const sortedVolumeData = [...volumeData].sort((a, b) => 
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        
         // Use only actual training days (no zero-filling for missing days)
-        chartData = volumeData.map((item: any) => item.volume);
-        labels = volumeData.map((item: any) => {
+        chartData = sortedVolumeData.map((item: any) => item.volume);
+        labels = sortedVolumeData.map((item: any) => {
           const d = new Date(item.date);
           return d.toLocaleDateString(language === 'en' ? 'en-US' : language, { month: 'short', day: 'numeric' });
         });
       } else {
+        // Sort data by date (oldest to newest for left-to-right display)
+        const sortedOneRMData = [...oneRMData].sort((a, b) => 
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        
         // Format 1RM data for chart
-        chartData = oneRMData.map((item: any) => item.max1rm);
-        labels = oneRMData.map((item: any) => {
+        chartData = sortedOneRMData.map((item: any) => item.max1rm);
+        labels = sortedOneRMData.map((item: any) => {
           const d = new Date(item.date);
           return d.toLocaleDateString(language === 'en' ? 'en-US' : language, { month: 'short', day: 'numeric' });
         });
