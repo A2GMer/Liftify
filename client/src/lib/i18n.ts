@@ -194,7 +194,7 @@ export const translations = {
     "home.welcome": "お帰りなさい！",
     "home.stats.currentMax": "現在の最大",
     "home.stats.totalWorkouts": "累計トレーニング回数",
-    "home.stats.volumeChange": "ボリューム変化",
+    "home.stats.volumeChange": "前回比",
     "home.stats.estimated1RM": "想定1RM",
     "home.chart.title": "日別ボリューム (kg)",
     "home.chart.1rmHistory": "推定1RM推移",
