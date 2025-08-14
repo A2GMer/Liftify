@@ -414,6 +414,7 @@ export class DatabaseStorage implements IStorage {
     thisWeekWorkouts: number;
     totalWorkouts: number;
     monthlyGain: number;
+    volumeChange: number;
     totalVolume: number;
     estimated1RM: number;
   }> {
@@ -554,11 +555,63 @@ export class DatabaseStorage implements IStorage {
       monthlyGain = Math.max(0, recentMaxWeight - previousMaxWeight);
     }
 
+    // Calculate volume change (latest vs previous workout)
+    let volumeChange = 0;
+    if (user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan)) {
+      // For free users, calculate using latest 30 workouts
+      if (latest30Workouts && latest30Workouts.length >= 2) {
+        const workoutIds = latest30Workouts.map(w => w.id);
+        
+        // Get latest 2 workout volumes
+        const latestWorkoutVolumes = await db
+          .select({
+            workoutId: workouts.id,
+            volume: sql<number>`SUM(${sets.weight} * ${sets.reps})`.as('volume'),
+            date: workouts.date,
+            time: workouts.time
+          })
+          .from(workouts)
+          .innerJoin(sets, eq(workouts.id, sets.workoutId))
+          .where(inArray(workouts.id, workoutIds))
+          .groupBy(workouts.id, workouts.date, workouts.time)
+          .orderBy(desc(workouts.date), desc(workouts.time))
+          .limit(2);
+
+        if (latestWorkoutVolumes.length >= 2) {
+          const latest = latestWorkoutVolumes[0].volume || 0;
+          const previous = latestWorkoutVolumes[1].volume || 0;
+          volumeChange = latest - previous;
+        }
+      }
+    } else {
+      // For paid users, get latest 2 workout volumes
+      const latestWorkoutVolumes = await db
+        .select({
+          workoutId: workouts.id,
+          volume: sql<number>`SUM(${sets.weight} * ${sets.reps})`.as('volume'),
+          date: workouts.date,
+          time: workouts.time
+        })
+        .from(workouts)
+        .innerJoin(sets, eq(workouts.id, sets.workoutId))
+        .where(eq(workouts.userId, userId))
+        .groupBy(workouts.id, workouts.date, workouts.time)
+        .orderBy(desc(workouts.date), desc(workouts.time))
+        .limit(2);
+
+      if (latestWorkoutVolumes.length >= 2) {
+        const latest = latestWorkoutVolumes[0].volume || 0;
+        const previous = latestWorkoutVolumes[1].volume || 0;
+        volumeChange = latest - previous;
+      }
+    }
+
     return {
       currentMax: maxWeight?.max || 0,
       thisWeekWorkouts: thisWeekCount?.count || 0,
       totalWorkouts: totalWorkoutsCount?.count || 0,
       monthlyGain: monthlyGain,
+      volumeChange: Math.round(volumeChange),
       totalVolume: totalVol?.total || 0,
       estimated1RM: Math.round(highest1RM),
     };

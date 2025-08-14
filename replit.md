@@ -168,6 +168,7 @@ Changelog:
 - July 15, 2025. Created comprehensive README.md for GitHub repository with multi-language support (English, Japanese, German, French) including project overview, tech stack, installation instructions, and configuration details
 - August 14, 2025. Modified graph horizontal axis to show last 1 month (30 days) of data and exclude days without training from display
 - August 14, 2025. Changed free plan limitation from "last 30 days" to "latest 30 workouts" across all backend queries, frontend translations (EN/JA/FR/DE), and UI displays
+- August 14, 2025. Updated statistics display: "this week" to "total workouts" and "monthly gain" to "volume change" (latest vs previous workout volume difference)
 ```
 
 ## User Preferences

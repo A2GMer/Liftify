@@ -47,6 +47,7 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
     thisWeekWorkouts: number;
     totalWorkouts: number;
     monthlyGain: number;
+    volumeChange: number;
     totalVolume: number;
     estimated1RM: number;
   }>({
@@ -191,11 +192,11 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
                 <Skeleton className="h-8 w-16 mx-auto mb-2" />
               ) : (
                 <div className="text-2xl font-bold text-coral">
-                  +{userStats?.monthlyGain || 0}kg
+                  {(userStats?.volumeChange || 0) >= 0 ? '+' : ''}{userStats?.volumeChange || 0}kg
                 </div>
               )}
               <div className="text-sm text-gray-600">
-                {t("home.stats.monthlyGain", language)}
+                {t("home.stats.volumeChange", language)}
               </div>
             </CardContent>
           </Card>
