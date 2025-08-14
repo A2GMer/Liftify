@@ -412,6 +412,7 @@ export class DatabaseStorage implements IStorage {
   async getUserStats(userId: string): Promise<{
     currentMax: number;
     thisWeekWorkouts: number;
+    totalWorkouts: number;
     monthlyGain: number;
     totalVolume: number;
     estimated1RM: number;
@@ -471,6 +472,12 @@ export class DatabaseStorage implements IStorage {
       .select({ count: sql<number>`COUNT(DISTINCT ${workouts.id})` })
       .from(workouts)
       .where(thisWeekWhereCondition);
+
+    // Get total workouts count (apply 30-workout limit for free users)
+    const [totalWorkoutsCount] = await db
+      .select({ count: sql<number>`COUNT(DISTINCT ${workouts.id})` })
+      .from(workouts)
+      .where(whereCondition);
 
     // Get total volume (apply 30-day limit for free users)
     const [totalVol] = await db
@@ -550,6 +557,7 @@ export class DatabaseStorage implements IStorage {
     return {
       currentMax: maxWeight?.max || 0,
       thisWeekWorkouts: thisWeekCount?.count || 0,
+      totalWorkouts: totalWorkoutsCount?.count || 0,
       monthlyGain: monthlyGain,
       totalVolume: totalVol?.total || 0,
       estimated1RM: Math.round(highest1RM),

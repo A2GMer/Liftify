@@ -42,13 +42,20 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
     }
   }, [isAuthenticated, authLoading, toast]);
 
-  const { data: userStats, isLoading: statsLoading } = useQuery({
+  const { data: userStats, isLoading: statsLoading } = useQuery<{
+    currentMax: number;
+    thisWeekWorkouts: number;
+    totalWorkouts: number;
+    monthlyGain: number;
+    totalVolume: number;
+    estimated1RM: number;
+  }>({
     queryKey: ['/api/analytics/user-stats'],
     enabled: isAuthenticated,
     retry: false,
   });
 
-  const { data: workouts, isLoading: workoutsLoading } = useQuery({
+  const { data: workouts, isLoading: workoutsLoading } = useQuery<WorkoutWithSets[]>({
     queryKey: ['/api/workouts'],
     enabled: isAuthenticated,
     retry: false,
@@ -130,7 +137,7 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
       </header>
 
       {/* Free Plan Data Retention Notice */}
-      {user && (user.subscriptionPlan === 'free' || !user.subscriptionPlan) && (
+      {user && ((user as any).subscriptionPlan === 'free' || !(user as any).subscriptionPlan) && (
         <div className="p-4 pb-0">
           <Alert className="border-yellow-200 bg-yellow-50">
             <Info className="h-4 w-4" />
@@ -169,11 +176,11 @@ export default function Home({ onNewWorkout, onEditWorkout, onMyPage, language, 
                 <Skeleton className="h-8 w-8 mx-auto mb-2" />
               ) : (
                 <div className="text-2xl font-bold text-coral">
-                  {userStats?.thisWeekWorkouts || 0}
+                  {userStats?.totalWorkouts || 0}
                 </div>
               )}
               <div className="text-sm text-gray-600">
-                {t("home.stats.thisWeek", language)}
+                {t("home.stats.totalWorkouts", language)}
               </div>
             </CardContent>
           </Card>
