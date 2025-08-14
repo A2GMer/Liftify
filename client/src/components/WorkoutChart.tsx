@@ -16,7 +16,7 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
   const { data: volumeData, isLoading: volumeLoading } = useQuery({
     queryKey: ['/api/analytics/daily-volume'],
     queryFn: async () => {
-      const response = await fetch('/api/analytics/daily-volume?days=7');
+      const response = await fetch('/api/analytics/daily-volume?days=30');
       return response.json();
     },
   });
@@ -42,26 +42,17 @@ export function WorkoutChart({ language }: WorkoutChartProps) {
         chartInstanceRef.current.destroy();
       }
 
-      const ctx = chartRef.current.getContext('2d');
+      const ctx = chartRef.current?.getContext('2d');
+      if (!ctx) return;
       
       let chartData, labels;
       
       if (selectedChart === 'volume') {
-        // Format volume data for chart
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
-          const date = new Date();
-          date.setDate(date.getDate() - (6 - i));
-          return date.toISOString().split('T')[0];
-        });
-
-        chartData = last7Days.map(date => {
-          const found = volumeData.find((item: any) => item.date === date);
-          return found ? found.volume : 0;
-        });
-
-        labels = last7Days.map(date => {
-          const d = new Date(date);
-          return d.toLocaleDateString(language === 'en' ? 'en-US' : language, { weekday: 'short' });
+        // Use only actual training days (no zero-filling for missing days)
+        chartData = volumeData.map((item: any) => item.volume);
+        labels = volumeData.map((item: any) => {
+          const d = new Date(item.date);
+          return d.toLocaleDateString(language === 'en' ? 'en-US' : language, { month: 'short', day: 'numeric' });
         });
       } else {
         // Format 1RM data for chart
