@@ -523,9 +523,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
             console.log("Stripe subscription scheduled for cancellation:", updatedSubscription.id);
           }
-        } catch (stripeError) {
+        } catch (stripeError: any) {
           console.error("Error canceling Stripe subscription:", stripeError);
-          return res.status(500).json({ message: "Failed to cancel subscription with Stripe" });
+          
+          // If the subscription doesn't exist in Stripe (404 error), continue with local cancellation
+          if (stripeError.statusCode === 404 || stripeError.code === 'resource_missing') {
+            console.log("Subscription not found in Stripe, proceeding with local cancellation only");
+            // Clean up the invalid subscription ID from the database
+            console.log(`Cleaning up invalid subscription ID: ${user.stripeSubscriptionId}`);
+          } else {
+            // For other Stripe errors, return error to user
+            return res.status(500).json({ message: "Failed to cancel subscription with Stripe: " + stripeError.message });
+          }
         }
       }
 
