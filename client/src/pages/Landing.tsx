@@ -10,7 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 import { t, type Language } from "@/lib/i18n";
-import chestVideoPath from "@assets/chest_1752043528152.mp4";
+
 import logoPath from "@assets/logo-trans_1752044551302.png";
 import logoWhitePath from "@assets/logo-trans_white_1752045120411.png";
 
@@ -41,21 +41,11 @@ export default function Landing({
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        {/* Background Video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ filter: "brightness(0.6) contrast(1.1)" }}
-        >
-          <source src={chestVideoPath} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black animate-gradient"></div>
+        
+        {/* Secondary Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60"></div>
 
         {/* Dot Pattern Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>

@@ -158,6 +158,8 @@ Changelog:
 - July 15, 2025. Created comprehensive README.md for GitHub repository with multi-language support (English, Japanese, German, French) including project overview, tech stack, installation instructions, and configuration details
 - August 17, 2025. Phase 1 optimization completed: Removed 28 unused UI components and 16 Radix UI packages (62% reduction)
 - August 17, 2025. Phase 2 optimization completed: Removed all AWS-related code, directories, and dependencies (aws-amplify-frontend, aws-lambda, 4 AWS packages)
+- August 17, 2025. Phase 3 optimization completed: Fixed TypeScript errors, removed 45 unused packages (tw-animate-css, recharts, memorystore, next-themes, react-day-picker, vaul, react-icons, react-resizable-panels)
+- August 17, 2025. Phase 4 optimization completed: Removed 15 more packages (passport-local, jsonwebtoken, @tailwindcss/vite), cleaned up unused hooks and attached assets (3.6MB reduction)
 - August 14, 2025. Modified graph horizontal axis to show last 1 month (30 days) of data and exclude days without training from display
 - August 14, 2025. Changed free plan limitation from "last 30 days" to "latest 30 workouts" across all backend queries, frontend translations (EN/JA/FR/DE), and UI displays
 - August 14, 2025. Updated statistics display: "this week" to "total workouts" and "monthly gain" to "volume change" (latest vs previous workout volume difference)
