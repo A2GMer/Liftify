@@ -6,19 +6,11 @@ Liftify is a modern full-stack web application designed for tracking bench press
 
 ## System Architecture
 
-### AWS Production Architecture
-- **Frontend**: AWS Amplify with React TypeScript
-- **Authentication**: AWS Cognito User Pool
-- **Backend**: AWS Lambda with Node.js TypeScript
-- **Database**: AWS RDS MySQL
-- **API Gateway**: AWS API Gateway REST API
-- **Build Tool**: Vite for development, AWS Amplify for production builds
-
-### Development Architecture (Legacy)
 - **Framework**: Express.js with TypeScript
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Replit OpenID Connect integration
 - **Session Management**: Express sessions with PostgreSQL store
+- **Build Tool**: Vite for development and production builds
 
 ## Key Components
 
@@ -109,9 +101,7 @@ Liftify is a modern full-stack web application designed for tracking bench press
 ```
 Changelog:
 - July 08, 2025. Initial setup with Replit/PostgreSQL architecture
-- July 08, 2025. Added AWS deployment architecture (Amplify/Cognito/Lambda/RDS)
 - July 08, 2025. Fixed language persistence across page navigation
-- July 08, 2025. Created AWS Lambda deployment package
 - July 09, 2025. Fixed edit mode API endpoint to properly load existing workout data
 - July 09, 2025. Redesigned landing page inspired by Endel's structure with three key strengths and chest training evidence
 - July 09, 2025. Added hero section background video for enhanced visual appeal
@@ -166,6 +156,8 @@ Changelog:
 - July 10, 2025. Fixed weight label duplication bug by removing redundant "(kg)" since translation keys already contain the unit
 - July 10, 2025. Hidden language selection on RecordWorkout page for better UX focus during workout registration
 - July 15, 2025. Created comprehensive README.md for GitHub repository with multi-language support (English, Japanese, German, French) including project overview, tech stack, installation instructions, and configuration details
+- August 17, 2025. Phase 1 optimization completed: Removed 28 unused UI components and 16 Radix UI packages (62% reduction)
+- August 17, 2025. Phase 2 optimization completed: Removed all AWS-related code, directories, and dependencies (aws-amplify-frontend, aws-lambda, 4 AWS packages)
 - August 14, 2025. Modified graph horizontal axis to show last 1 month (30 days) of data and exclude days without training from display
 - August 14, 2025. Changed free plan limitation from "last 30 days" to "latest 30 workouts" across all backend queries, frontend translations (EN/JA/FR/DE), and UI displays
 - August 14, 2025. Updated statistics display: "this week" to "total workouts" and "monthly gain" to "volume change" (latest vs previous workout volume difference)
