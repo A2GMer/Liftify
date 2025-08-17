@@ -47,13 +47,15 @@ export function HeroSection({ language, onGetStarted }: HeroSectionProps) {
       }, "-=0.7");
       
       // Stats animation
-      tl.from(statsRef.current?.children, {
-        duration: 0.8,
-        y: 20,
-        opacity: 0,
-        stagger: 0.1,
-        ease: "power2.out"
-      }, "-=0.5");
+      if (statsRef.current?.children) {
+        tl.from(statsRef.current.children, {
+          duration: 0.8,
+          y: 20,
+          opacity: 0,
+          stagger: 0.1,
+          ease: "power2.out"
+        }, "-=0.5");
+      }
       
       // Button animation
       tl.from(buttonRef.current, {
